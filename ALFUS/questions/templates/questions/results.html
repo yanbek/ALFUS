@@ -1,0 +1,7 @@
+
+{% block content %}
+<h1>{{ question.question_text }}</h1>
+<h3>{{ choice.is_correct}}</h3>
+{% endblock %}
+
+<a href="{% url 'questions:detail' question.id %}">Try again?</a>
