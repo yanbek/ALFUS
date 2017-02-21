@@ -1,7 +1,17 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+    <head>
+        <meta charset="utf-8" />
+	    <meta name="viewport" content = "width=device-width, initial-scale=1.0">
+    </head>
 
-{% block content %}
-<h1>{{ question.question_text }}</h1>
-<h3>{{ is_correct}}</h3>
-{% endblock %}
+    <body>
+        {% block content %}
+        <h1>{{ question.question_text }}</h1>
+        <h3>{{ is_correct}}</h3>
+        {% endblock %}
 
-<a href="{% url 'questions:detail' question.id %}">Try again?</a>
+        <a href="{% url 'questions:detail' question.id %}">Try again?</a>
+    </body>
+</html>

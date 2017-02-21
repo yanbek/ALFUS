@@ -1,12 +1,23 @@
-<h1>{{ question.question_text }}</h1>
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+    <head>
+        <meta charset="utf-8" />
+	    <meta name="viewport" content = "width=device-width, initial-scale=1.0">
+    </head>
 
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <body>
+        <h1>{{ question.question_text }}</h1>
 
-<form action="{% url 'questions:answer' question.id %}" method="post">
-{% csrf_token %}
-{% for choice in question.choice_set.all %}
-    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
-    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
-{% endfor %}
-<input type="submit" value="Answer" />
-</form>
+        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+        <form action="{% url 'questions:answer' question.id %}" method="post">
+            {% csrf_token %}
+            {% for choice in question.choice_set.all %}
+            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br />
+            {% endfor %}
+            <input type="submit" value="Answer" />
+        </form>
+    </body>
+</html>
