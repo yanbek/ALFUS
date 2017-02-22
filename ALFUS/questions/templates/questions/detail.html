@@ -4,9 +4,11 @@
     <head>
         <meta charset="utf-8" />
 	    <meta name="viewport" content = "width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static 'questions/css/bootstrap.min.css' %}" />
     </head>
 
     <body>
+        <div class="container">
         <h1>{{ question.question_text }}</h1>
 
         {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -21,10 +23,8 @@
         </form>
 
         <div>
-            <form action="/questions/">
-            <input type="submit" value="Go back" />
-            </form>
+            <a href="/questions/" class="btn btn-default" role="button">Go back</a>
         </div>
-
+        </div>
     </body>
 </html>

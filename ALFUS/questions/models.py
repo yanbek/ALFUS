@@ -35,3 +35,4 @@ class Choice(models.Model):
 class Answer(models.Model):
     submitted_by = models.ForeignKey(User)
     submitted_answer = models.ForeignKey(Choice)
+
