@@ -10,41 +10,25 @@
 </head>
 
 <body class="body" style="background-color:#f6f6f6">
+	<nav class="navbar navbar-default">
+  		<div class="container-fluid">
+    		<div class="navbar-header">
+      			<a class="navbar-brand" href="#">ALFUS</a>
+    		</div>
+    		<ul class="nav navbar-nav">
+      			<li class="active"><a href="/">Home</a></li>
+      			<li><a href="/questions/">Multiple Choice Questions</a></li>
+      			<li><a href="#">Page 2</a></li>
+      			<li><a href="#">Page 3</a></li>
+    		</ul>
+  		</div>
+	</nav>
+
 	<div class="container" style="min-height:95%; ">
 		<div class="row">
 			  <div class="col-sm-2">
 				{# <img src="{% static 'personal/img/profile.jpg' %}" class="responsive-img" style='max-height:100px;' alt="face">#}
 			  </div>
-			  <div class="col-sm-10">
-				  <br>
-				  <center>
-				  <h3>ALFUS TEST</h3>
-				  </center>
-			  </div>
-		</div><hr>
-
-		<div class="row">
-		  <div class="col-sm-2">
-		  <br>
-
-		  <br>
-		   <!-- Great, til you resize. -->
-			<!--<div class="well bs-sidebar affix" id="sidebar" style="background-color:#fff">-->
-			<div class="well bs-sidebar" id="sidebar" style="background-color:#fff">
-			  <ul class="nav nav-pills nav-stacked">
-				<li><a href='/'>Home</a></li>
-                  <li><a href='/questions/'>Multiple Choice Questions</a></li>
-			  </ul>
-			</div> <!--well bs-sidebar affix-->
-		  </div> <!--col-sm-2-->
-		  <div class="col-sm-10">
-
-			<div class='container-fluid'>
-			<br><br>
-			   {% block content %}
-			   {% endblock %}
-			</div>
-		  </div>
 		</div>
 	</div>
 </body>
