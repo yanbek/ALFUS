@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from django.http import Http404
 from .models import Choice, Question
+from random import randint
 
 
 def index(request):
@@ -18,6 +19,8 @@ def detail(request, question_id):
 
 
 def answer(request, question_id):
+    all_question_id = Question.objects.values_list('id', flat=True)
+    random_number = randint(1, len(all_question_id))
     question = get_object_or_404(Question, pk=question_id)
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
@@ -28,5 +31,5 @@ def answer(request, question_id):
             'error_message': "You didn't select a choice."
         })
     else:
-        return render(request, 'questions/results.html', {'question': question, 'is_correct': selected_choice.is_correct})
+        return render(request, 'questions/results.html', {'question': question, 'is_correct': selected_choice.is_correct, 'random_q': random_number})
 

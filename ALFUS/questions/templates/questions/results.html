@@ -10,6 +10,6 @@
         <h1>{{ question.question_text }}</h1>
         <h3>{{ is_correct}}</h3>
 
-        <a href="{% url 'questions:detail' question.id%}">Try again?</a>
+        <a href="{% url 'questions:detail' random_q%}">Next question</a>
     </body>
 </html>
