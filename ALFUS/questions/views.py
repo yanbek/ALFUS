@@ -6,7 +6,7 @@ from random import randint
 
 
 def index(request):
-    question_list = Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')[:5]
+    question_list = Question.objects.all
     return render(request, 'questions/index.html', {'question_list': question_list})
 
 
