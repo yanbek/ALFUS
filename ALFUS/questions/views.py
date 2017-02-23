@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.utils import timezone
 from django.http import Http404
 from .models import Choice, Question
@@ -23,6 +23,8 @@ def answer(request, question_id):
     questions_not_answered = request.session['question_ids']
     questions_not_answered.remove(int(question_id))
     request.session['question_ids'] = questions_not_answered
+    if not questions_not_answered:
+        return redirect('index')
     next_question_id = random.choice(questions_not_answered)
     question = get_object_or_404(Question, pk=question_id)
 
