@@ -1,8 +1,10 @@
-from django.shortcuts import get_object_or_404, render, redirect
-from django.utils import timezone
-from django.http import Http404
-from .models import Choice, Question
 import random
+
+from django.http import Http404
+from django.shortcuts import get_object_or_404, render, redirect
+
+from .models import Choice, Question
+
 
 def index(request):
     all_question_id = Question.objects.values_list('id', flat=True)
@@ -37,5 +39,5 @@ def answer(request, question_id):
             'error_message': "You didn't select a choice."
         })
     else:
-        return render(request, 'questions/results.html', {'question': question, 'is_correct': selected_choice.is_correct, 'random_q': next_question_id})
-
+        return render(request, 'questions/results.html',
+                      {'question': question, 'is_correct': selected_choice.is_correct, 'random_q': next_question_id})

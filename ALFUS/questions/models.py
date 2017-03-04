@@ -1,7 +1,8 @@
 import datetime
+
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User
 
 
 class Question(models.Model):
@@ -35,5 +36,3 @@ class Choice(models.Model):
 class Answer(models.Model):
     submitted_by = models.ForeignKey(User)
     submitted_answer = models.ForeignKey(Choice)
-
-

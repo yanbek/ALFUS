@@ -1,7 +1,8 @@
-from django.shortcuts import render
-from .forms import LoginForm
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
+
+from .forms import LoginForm
 
 
 def index(request):
