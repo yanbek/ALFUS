@@ -15,6 +15,8 @@ def contact(request):
 
 
 def login_view(request):
+    template_name = "personal/login.html"
+
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -28,7 +30,7 @@ def login_view(request):
                 else:
                     print("The account has been disabled!")
             else:
-                print("The username and password were incorrect.")
+                print("This user does not exist!")
 
     else:
         form = LoginForm()
