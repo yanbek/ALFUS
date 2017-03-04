@@ -342,3 +342,9 @@ nav#tf-footer {
     bottom: 0;
     width: 100%
 }
+
+#form-table {
+    margin: auto;
+    width: 50%;
+    background-color: #2aabd2;
+}
