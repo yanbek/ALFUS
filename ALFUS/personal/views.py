@@ -1,9 +1,10 @@
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views.generic import View
-from .forms import UserForm
+
 from .forms import LoginForm
+from .forms import UserForm
 
 
 def index(request):
