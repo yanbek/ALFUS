@@ -1,7 +1,6 @@
 {% extends "questions/base.html" %}
 
 {% block content %}
-<div style="padding-top: 10px;">
     {% if question_list %}
     <ul class="list-group">
         {% for question in question_list %}
@@ -12,5 +11,4 @@
     {% else %}
     <p>No questions are available.</p>
     {% endif %}
-</div>
 {% endblock %}

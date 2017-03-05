@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load staticfiles %}
 <head>
     <!-- Basic Page Needs
     ================================================== -->
@@ -39,7 +40,7 @@
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <a class="navbar-brand logo" href="index.html">ALFUS</a>
+                <a class="navbar-brand logo" href="">ALFUS</a>
             </div>
 
             <!-- Collect the nav links, forms, and other content for toggling -->
@@ -57,13 +58,11 @@
 </div>
 
 
-<div id="tf-portfolio">
     <div class="container">
-        <div class="section-title">
-        </div>
-
+        <div class="content"
+        {%block content %}{% endblock %}
     </div>
-</div>
+    </div>
 
 <nav id="tf-footer">
     <div class="container">

@@ -1,12 +1,11 @@
+from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 from django.http import Http404
-from django.shortcuts import get_object_or_404, render, redirect
-
 from .models import Choice, Question
+from random import randint
 
 
 def index(request):
-    all_question_id = Question.objects.values_list('id', flat=True)
-    request.session['question_ids'] = list(all_question_id)
     question_list = Question.objects.all
     return render(request, 'questions/index.html', {'question_list': question_list})
 
@@ -20,14 +19,9 @@ def detail(request, question_id):
 
 
 def answer(request, question_id):
-    questions_not_answered = request.session['question_ids']
-    questions_not_answered.remove(int(question_id))
-    request.session['question_ids'] = questions_not_answered
-    if not questions_not_answered:
-        return redirect('index')
-    next_question_id = random.choice(questions_not_answered)
+    all_question_id = Question.objects.values_list('id', flat=True)
+    random_number = randint(1, len(all_question_id))
     question = get_object_or_404(Question, pk=question_id)
-
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
     except (KeyError, Choice.DoesNotExist):
@@ -37,5 +31,4 @@ def answer(request, question_id):
             'error_message': "You didn't select a choice."
         })
     else:
-        return render(request, 'questions/results.html',
-                      {'question': question, 'is_correct': selected_choice.is_correct, 'random_q': next_question_id})
+        return render(request, 'questions/results.html', {'question': question, 'is_correct': selected_choice.is_correct, 'random_q': random_number})

@@ -32,8 +32,8 @@ p{
 	font-size: 13px;
 }
 
-a { 
-	color: #ffffff;
+a {
+	color: #000000;
 	transition: all 0.8;
 }
 a:hover,
@@ -104,7 +104,7 @@ a:focus{
 	letter-spacing: 1px;
 }
 
-#tf-menu.navbar-default .navbar-nav > li > a:hover, 
+#tf-menu.navbar-default .navbar-nav > li > a:hover,
 #tf-menu.navbar-default .navbar-nav > li > a:focus {
 	color: #2F937B;
 	background-color: transparent;
@@ -115,7 +115,7 @@ a:focus{
 }
 
 #tf-service{
-	padding: 7% 0; 
+	padding: 7% 0;
 }
 
 .media-left.media-middle i {
