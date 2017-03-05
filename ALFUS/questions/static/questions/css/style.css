@@ -56,12 +56,12 @@ a:focus{
 
 /* Home Style */
 #tf-home{
-	background: url(../img/11.jpg);
-	background-size: cover;
-	background-position: center;
-	background-attachment: fixed;
-	background-repeat: no-repeat;
-	color: #cfcfcf;
+	margin-bottom: 0;
+	background: transparent;
+	border: 0;
+	color: #fff !important;
+	padding: 2% 0;
+	transition: all 0.5s;
 }
 
 #tf-home .overlay{
@@ -82,12 +82,12 @@ a:focus{
 }
 /* Navigation */
 #tf-menu {
-	margin-bottom: 0;
-	background: transparent;
-	border: 0;
-	color: #fff !important;
-	padding: 2% 0;
-	transition: all 0.5s;
+	position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10000;
+    background: #222222;
+    padding: 1% 0;
 }
 #sticky {
     padding: 0.5ex;
@@ -95,14 +95,6 @@ a:focus{
     color: #fff;
     font-size: 2em;
     border-radius: 0.5ex;
-}
-#tf-menu.stick {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 10000;
-    background: #222222;
-    padding: 1% 0;
 }
 #tf-menu.navbar-default .navbar-nav > li > a {
 	color: #C5C5C5;
@@ -144,6 +136,12 @@ a:focus{
 	background: #f1f1f1;
 	padding: 5%  0 8% 0;
 	text-align: center;
+	position: absolute;
+    color: #cfcfcf;
+    top: 0;
+    bottom: 0;
+    overflow: hidden;
+    width: 100%;
 }
 
 .section-title hr{
@@ -221,7 +219,7 @@ ul.cat.list-inline li a:hover{
 .nopadding{ padding:  0;}
 
 #tf-about{
-	background: url(../img/07.jpg);
+	background: url(../../../../personal/static/personal/img/07.jpg);
 	background-size: cover;
 	background-position: center;
 	background-attachment: scroll;
@@ -236,7 +234,7 @@ ul.cat.list-inline li a:hover{
 }
 
 #tf-why-me{
-	background: url(../img/10.jpg);
+	background: url(../../../../personal/static/personal/img/10.jpg);
 	background-size: cover;
 	background-position: center;
 	background-attachment: scroll;
@@ -253,7 +251,7 @@ ul.why-me li{
 	margin: 10px 0;
 }
 #tf-contact{
-	background: url(../img/08.jpg);
+	background: url(../../../../personal/static/personal/img/08.jpg);
 	background-size: cover;
 	background-position: center;
 	background-attachment: scroll;
@@ -299,4 +297,7 @@ nav#tf-footer {
 	background: #222222;
 	padding: 3% 0 2% 0;
 	color: #f1f1f1;
+	position: absolute;
+	bottom: 0;
+    width: 100%
 }
