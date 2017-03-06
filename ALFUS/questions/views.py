@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils import timezone
 from django.http import Http404
-from .models import Choice, Question
+from .models import Choice, Question, hasAnswered
 import random
 
 def index(request):
@@ -20,6 +20,7 @@ def detail(request, question_id):
 
 
 def answer(request, question_id):
+
     questions_not_answered = request.session['question_ids']
     questions_not_answered.remove(int(question_id))
     request.session['question_ids'] = questions_not_answered
@@ -30,6 +31,9 @@ def answer(request, question_id):
 
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
+        isCorrect = selected_choice.correct
+        new_answer = hasAnswered(wasCorrect = isCorrect, submitted_by = request.user, submitted_answer = question)
+        new_answer.save()
     except (KeyError, Choice.DoesNotExist):
         # Redisplay the question voting form.
         return render(request, 'questions/detail.html', {
