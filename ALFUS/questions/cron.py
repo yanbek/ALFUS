@@ -22,8 +22,9 @@ class Difficulty_adjustment(CronJobBase):
                 total_answers = len(question_dict[question_id])
                 correct_answers = sum(question_dict[question_id])
                 if total_answers == 0:
-                    total_answers = 1
-                new_difficulty = float(total_answers - correct_answers) / float(total_answers)
+                    new_difficulty = 0
+                else:
+                    new_difficulty = float(total_answers - correct_answers) / float(total_answers)
                 question = Question.objects.get(pk=question_id)
                 question.difficulty = new_difficulty
                 question.save()
