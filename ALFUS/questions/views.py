@@ -12,7 +12,6 @@ def index(request):
     for question in question_list:
         question_dict[question.chapter_id].append((question.id, question.difficulty))
     request.session['question_dict'] = question_dict
-    hasAnswered.objects.all().delete()
 
     return render(request, 'questions/index.html', {'question_list': question_list})
 
@@ -33,7 +32,11 @@ def answer(request, question_id):
         # Save answer
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
         isCorrect = selected_choice.correct
-        new_answer = hasAnswered(wasCorrect=isCorrect, submitted_by=request.user, submitted_answer=question)
+        # If already answered this question, create new answer with increased counter
+        new_answer = hasAnswered(wasCorrect = isCorrect, submitted_by=request.user, submitted_answer=question)
+        if hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).exists():
+            old_answer = hasAnswered.objects.get(submitted_by=request.user, submitted_answer=question)
+            new_answer.answer_attempt = old_answer.answer_attempt + 1
         new_answer.save()
 
         # Find new chapter skill rating. The rating is calculated by the formula  total correct answer / total answer
@@ -75,18 +78,16 @@ def answer(request, question_id):
                 new_delta = math.fabs(question_to_be_checked[1] - skill_rating_chapter) * (
                     skill_rating_chapter * chapter_priority_constant)
 
-                if ((not hasAnswered.objects.filter(submitted_by=request.user,
+                if (not hasAnswered.objects.filter(submitted_by=request.user,
                                                    submitted_answer=question_to_be_checked[
-                                                       0]).exists()) or hasAnswered.objects.values_list(
-                    'answer_attempt', flat=True).get(
-                    submitted_by=request.user,
-                    submitted_answer=question_to_be_checked[
-                        0]) != request.user.profile.test_attempt) and new_delta < delta:
+                                                       0], answer_attempt=request.user.profile.test_attempt).exists()) and new_delta < delta:
                     delta = new_delta
                     next_question_id = question_to_be_checked[0]
 
         if next_question_id is None:
-            # User has answered every question.
+            # User has answered every question. Increment user test attempt counter (reset test).
+            request.user.profile.test_attempt += 1
+            request.user.profile.save()
             return redirect('index')
 
     except (KeyError, Choice.DoesNotExist):  # Redisplay the question voting form.
