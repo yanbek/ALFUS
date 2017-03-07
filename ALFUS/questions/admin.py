@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Choice, Question
+from .models import Choice, Question, Subject, Chapter
 
 
 class ChoiceInline(admin.TabularInline):
@@ -10,7 +10,7 @@ class ChoiceInline(admin.TabularInline):
 
 class QuestionAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['question_text', 'difficulty']}),
+        (None, {'fields': ['question_text', 'difficulty', 'chapter']}),
         ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']})
     ]
     inlines = [ChoiceInline]
@@ -19,5 +19,7 @@ class QuestionAdmin(admin.ModelAdmin):
     search_fields = ['question_text']
 
 admin.site.register(Question, QuestionAdmin)
+admin.site.register(Subject)
+admin.site.register(Chapter)
 
 # admin.site.site_header = "Polls Administration"
