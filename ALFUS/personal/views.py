@@ -1,7 +1,10 @@
-from django.shortcuts import render
-from .forms import LoginForm
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.views.generic import View
+
+from .forms import LoginForm
+from .forms import UserForm
 
 
 def index(request):
@@ -13,21 +16,52 @@ def contact(request):
 
 
 def login_view(request):
+    template_name = "personal/login.html"
+
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
             u = form.cleaned_data["username"]
             p = form.cleaned_data["password"]
-            user = authenticate(username = u, password = p)
+            user = authenticate(username=u, password=p)
             if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return HttpResponseRedirect("/")
+                    return HttpResponseRedirect("../questions")
                 else:
                     print("The account has been disabled!")
             else:
-                print("The username and password were incorrect.")
+                print("This user does not exist!")
 
     else:
         form = LoginForm()
         return render(request, "personal/login.html", {"form": form})
+
+
+class UserFormView(View):
+    form_class = UserForm
+    template_name = "personal/registration_form.html"
+
+    def get(self, request):
+        form = self.form_class(None)
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            user.set_password(password)
+            user.save()
+
+            user = authenticate(username=username, password=password)
+
+            if user is not None:
+                if user.is_active:
+                    login(request, login())
+                    return HttpResponseRedirect("/")
+
+        return render(request, self.template_name, {"form": form})
