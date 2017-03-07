@@ -8,16 +8,13 @@ import math
 def index(request):
     question_list = Question.objects.all()
 
-    populate_questions_dict(question_list, request)
-
-    return render(request, 'questions/index.html', {'question_list': question_list})
-
-
-def populate_questions_dict(question_list, request):
     question_dict = defaultdict(list)
     for question in question_list:
         question_dict[question.chapter_id].append((question.id, question.difficulty))
     request.session['question_dict'] = question_dict
+    hasAnswered.objects.all().delete()
+
+    return render(request, 'questions/index.html', {'question_list': question_list})
 
 
 def detail(request, question_id):
@@ -39,7 +36,7 @@ def answer(request, question_id):
         new_answer = hasAnswered(wasCorrect=isCorrect, submitted_by=request.user, submitted_answer=question)
         new_answer.save()
 
-        # Update chapter skill rating (just using correct answer / total answers now)
+        # Find new chapter skill rating. The rating is calculated by the formula  total correct answer / total answer
         prior_user_answers_to_current_chapter = hasAnswered.objects.filter(submitted_by=request.user,
                                                                            submitted_answer__chapter=question.chapter_id)
         answer_list = []
@@ -48,7 +45,9 @@ def answer(request, question_id):
             answer_list.append(prior_answer.wasCorrect)
         total_answers = len(answer_list)
         correct_answers = sum(answer_list)
-        updated_skill_rating = float(total_answers - correct_answers) / float(total_answers)
+        updated_skill_rating = float(correct_answers) / float(total_answers)
+
+        # Check if the hasChapter relationship exists. If not exists, create one.
         if not hasChapter.objects.filter(user=request.user, chapter=question.chapter_id).exists():
             user_hasChapter_current = hasChapter(user=request.user, chapter=Chapter.objects.get(pk=question.chapter_id))
         else:
@@ -57,36 +56,44 @@ def answer(request, question_id):
         user_hasChapter_current.save()
 
         # Get next question by selecting an unanswered question that match the current skill rating.
-        # This is most likely not the most optimal solution..
-
+        # Prioritize chapters with lower skill rating.
+        # The question that gives the lowest delta is the winner.
         next_question_id = None
-        delta = 1
+        chapter_priority_constant = 1
+        delta = 1.0
         for chapter in question_dict:
-
+            # Check if the hasChapter relationship exists. If not exists, create one with default skill rating 0.5
             if not hasChapter.objects.filter(user=request.user, chapter=chapter).exists():
                 user_hasChapter = hasChapter(user=request.user, chapter=Chapter.objects.get(pk=chapter))
                 user_hasChapter.save()
+            # Get chapter skill rating
             skill_rating_chapter = hasChapter.objects.values_list('skill_rating_chapter', flat=True).get(
                 user=request.user, chapter=chapter)
-            if question_dict[chapter]:
-                for question_to_be_checked in question_dict[chapter]:
-                    if hasAnswered.objects.filter(submitted_by=request.user,
-                                                  submitted_answer=question_to_be_checked[0]).exists():
-                        question_dict[chapter].remove(question_to_be_checked)
-                    else:
-                        if math.fabs(question_to_be_checked[1] - skill_rating_chapter) < delta:
-                            delta = math.fabs(question_to_be_checked[1] - skill_rating_chapter)
-                            next_question_id = question_to_be_checked[0]
-            request.session['question_dict'] = question_dict
+            # Iterate over the chapter list and see if there is any unanswered question that gives us a lower delta.
+            for question_to_be_checked in question_dict[chapter]:
+
+                new_delta = math.fabs(question_to_be_checked[1] - skill_rating_chapter) * (
+                    skill_rating_chapter * chapter_priority_constant)
+
+                if ((not hasAnswered.objects.filter(submitted_by=request.user,
+                                                   submitted_answer=question_to_be_checked[
+                                                       0]).exists()) or hasAnswered.objects.values_list(
+                    'answer_attempt', flat=True).get(
+                    submitted_by=request.user,
+                    submitted_answer=question_to_be_checked[
+                        0]) != request.user.profile.test_attempt) and new_delta < delta:
+                    delta = new_delta
+                    next_question_id = question_to_be_checked[0]
 
         if next_question_id is None:
+            # User has answered every question.
             return redirect('index')
 
-    except (KeyError, Choice.DoesNotExist):
-        # Redisplay the question voting form.
+    except (KeyError, Choice.DoesNotExist):  # Redisplay the question voting form.
+
         return render(request, 'questions/detail.html', {
             'question': question,
-            'error_message': "You didn't select a choice."
+            '   error_message': "You didn't select a choice."
         })
     else:
         return render(request, 'questions/results.html',

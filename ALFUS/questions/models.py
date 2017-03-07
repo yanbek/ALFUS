@@ -2,15 +2,21 @@ import datetime
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-
+from django.db.models import signals
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
-    #location = models.CharField(max_length=140)
+    test_attempt = models.IntegerField(default=1)
 
     def __str__(self):
-        return 'Profile of user: {}'.format(self.user.username)
+          return "%s's profile" % self.user
 
+    def create_profile(sender, instance, created, *args, **kwargs):
+        # ignore if this is an existing User
+        if not created:
+            return
+        UserProfile.objects.create(user=instance)
+    signals.post_save.connect(create_profile, sender=User)
 
 class Subject(models.Model):
     name = models.CharField(max_length=200)
@@ -59,6 +65,7 @@ class Choice(models.Model):
 # A table for the relationship between user and question
 class hasAnswered(models.Model):
     wasCorrect = models.BooleanField()
+    answer_attempt = models.IntegerField(default=1)
     submitted_by = models.ForeignKey(User, blank=True)
     submitted_answer = models.ForeignKey(Question, blank=True)
 
