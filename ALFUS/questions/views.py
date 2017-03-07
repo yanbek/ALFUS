@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.http import Http404
 from .models import Choice, Question, hasAnswered, hasChapter, Chapter
 from collections import defaultdict
+from django.db.models import Max
 import math
 
 
@@ -35,7 +36,7 @@ def answer(request, question_id):
         # If already answered this question, create new answer with increased counter
         new_answer = hasAnswered(wasCorrect = isCorrect, submitted_by=request.user, submitted_answer=question)
         if hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).exists():
-            old_answer = hasAnswered.objects.get(submitted_by=request.user, submitted_answer=question)
+            old_answer = hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).latest('answer_attempt')
             new_answer.answer_attempt = old_answer.answer_attempt + 1
         new_answer.save()
 
