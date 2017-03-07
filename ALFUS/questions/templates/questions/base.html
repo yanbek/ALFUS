@@ -1,6 +1,6 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-{% load staticfiles %}
 <head>
     <!-- Basic Page Needs
     ================================================== -->
@@ -14,15 +14,15 @@
     <meta name="author" content="ThemeForces.Com">
 
     <!-- Bootstrap -->
-    <link rel="stylesheet" type="text/css" href="../../static/questions/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="../../static/questions/fonts/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'questions/css/bootstrap.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'questions/fonts/font-awesome/css/font-awesome.css' %}">
 
     <!-- Stylesheet
     ================================================== -->
-    <link rel="stylesheet" type="text/css" href="../../static/questions/css/style.css">
-    <link rel="stylesheet" type="text/css" href="../../static/questions/css/responsive.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'questions/css/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'questions/css/responsive.css' %}">
 
-    <script type="text/javascript" src="../../static/questions/js/modernizr.custom.js"></script>
+    <script type="text/javascript" src="{% static 'questions/js/modernizr.custom.js' %}"></script>
 
     <link href='http://fonts.googleapis.com/css?family=Raleway:500,600,700,100,800,900,400,200,300' rel='stylesheet'
           type='text/css'>
@@ -85,13 +85,13 @@
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script type="text/javascript" src="../../static/questions/js/jquery.1.11.1.js"></script>
+<script type="text/javascript" src="{% static 'questions/js/jquery.1.11.1.js' %"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script type="text/javascript" src="../../static/questions/js/bootstrap.js"></script>
+<script type="text/javascript" src="{% static 'questions/js/bootstrap.js' %}"></script>
 
 <!-- Javascripts
 ================================================== -->
-<script type="text/javascript" src="../../static/questions/js/main.js"></script>
+<script type="text/javascript" src="{% static 'questions/js/main.js' %}"></script>
 
 </body>
 </html>
