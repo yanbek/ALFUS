@@ -37,7 +37,7 @@ class Question(models.Model):
     pub_date = models.DateTimeField('date published')
     # 0 is the easiest and 1 is the hardest
     difficulty = models.FloatField(default=0.5)
-    chapter = models.ForeignKey(Chapter, blank=True)
+    chapter = models.ForeignKey(Chapter, blank=True, null=True)
 
     def __str__(self):
         return self.question_text
@@ -66,25 +66,22 @@ class Choice(models.Model):
 class hasAnswered(models.Model):
     wasCorrect = models.BooleanField()
     answer_attempt = models.IntegerField(default=1)
-    submitted_by = models.ForeignKey(User, blank=True)
-    submitted_answer = models.ForeignKey(Question, blank=True)
+    submitted_by = models.ForeignKey(User)
+    submitted_answer = models.ForeignKey(Question)
 
 
 class hasSubject(models.Model):
     skill_rating_subject = models.FloatField(default=0.5)
-    user = models.ForeignKey(User, blank=True)
-    subject = models.ForeignKey(Subject, blank=True)
+    user = models.ForeignKey(User)
+    subject = models.ForeignKey(Subject)
 
 class hasChapter(models.Model):
     skill_rating_chapter = models.FloatField(default=0.5)
-    user = models.ForeignKey(User, blank=True)
-    chapter = models.ForeignKey(Chapter, blank=True)
+    user = models.ForeignKey(User)
+    chapter = models.ForeignKey(Chapter)
 
 
-#Old code, now redundant
-#class Answer(models.Model):
-#    submitted_by = models.ForeignKey(User)
-#    submitted_answer = models.ForeignKey(Choice)
+
 
 
 
