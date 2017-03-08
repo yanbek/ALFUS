@@ -7,5 +7,5 @@ urlpatterns = [
     url(r'^contact/$', views.contact, name='contact'),
     # url(r'^user/(\w+)/$', views.profile, name="profile"),
     url(r"^login/$", views.login_view, name='login'),
-    url(r"^register/$", views.UserFormView.as_view(), name="register"),
+    url(r"^register/$", views.reqister_view, name="register"),
 ]

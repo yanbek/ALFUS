@@ -32,8 +32,3 @@ def answer(request, question_id):
         })
     else:
         return render(request, 'questions/results.html', {'question': question, 'is_correct': selected_choice.is_correct, 'random_q': random_number})
-
-
-def logout_view(request):
-    logout(request)
-    return HttpResponseRedirect("/")
