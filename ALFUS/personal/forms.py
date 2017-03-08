@@ -10,9 +10,23 @@ class LoginForm(forms.Form):
 
 
 class UserRegisterForm(forms.ModelForm):
+    email = forms.EmailField(label="Email address")
+    email2 = forms.EmailField(label="Confirm email address")
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     class Meta:
         model = User
-        fields = ["username", "email", "password"]
+        fields = ["username", "email", "email2", "password"]
+
+    def clean_email2(self):
+        email = self.cleaned_data.get("email")
+        email2 = self.cleaned_data.get("email2")
+        if email != email2:
+            raise forms.ValidationError("Email addresses must match")
+
+        email_qs = User.objects.filter(email=email)
+        if email_qs.exists():
+            raise forms.ValidationError("This email address has already been registered.")
+        return email
 
 
 User = get_user_model()

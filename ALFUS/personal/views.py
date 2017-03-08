@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import View
 from .forms import UserRegisterForm
 from .forms import UserLoginForm
@@ -21,7 +21,7 @@ def login_view(request):
         password = form.cleaned_data.get("password")
         user = authenticate(username=username, password=password)
         login(request, user)
-        # redirect
+        return redirect("../questions")
 
     return render(request, "personal/form.html", {"form": form, "title": title})
 
@@ -34,6 +34,15 @@ def logout_view(request):
 def reqister_view(request):
     title = "Register"
     form = UserRegisterForm(request.POST or None)
+    if form.is_valid():
+        user = form.save(commit=False)
+        password = form.cleaned_data.get("password")
+        user.set_passwrod(password)
+        user.save()
+        new_user = authenticate(username=user.username, password=password)
+        login(request, new_user)
+        return redirect("/")
+
 
     context = {"form": form, "title": title}
     return render(request, "personal/form.html", context)
