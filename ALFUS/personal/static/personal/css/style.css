@@ -73,12 +73,16 @@ a:focus {
     background-attachment: local;
     background-repeat: no-repeat;
     position: absolute;
-    color: #cfcfcf;
+    color: #000000;
     top: 0;
     bottom: 0;
     overflow: auto;
     width: 100vw;
     height: 100%;
+}
+
+#frontpage {
+    color: #cfcfcf;
 }
 
 #tf-home .overlay {
