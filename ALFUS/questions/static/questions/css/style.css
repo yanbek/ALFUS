@@ -301,3 +301,7 @@ nav#tf-footer {
 	bottom: 0;
     width: 100%
 }
+
+nav#tf-footer a {
+	color: white;
+}
