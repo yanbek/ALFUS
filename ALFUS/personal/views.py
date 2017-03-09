@@ -32,7 +32,7 @@ def logout_view(request):
     return render(request, "personal/home.html")
 
 
-def reqister_view(request):
+def register_view(request):
     title = "Register"
     form = UserRegisterForm(request.POST or None)
     if form.is_valid():
@@ -43,7 +43,6 @@ def reqister_view(request):
         new_user = authenticate(username=user.username, password=password)
         login(request, new_user)
         return redirect("/")
-
 
     context = {"form": form, "title": title}
     return render(request, "personal/form.html", context)
