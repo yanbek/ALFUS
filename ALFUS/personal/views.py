@@ -1,5 +1,4 @@
-from django.contrib.auth import authenticate, login, logout, get_user_model
-from django.http import HttpResponseRedirect
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.views.generic import View
 from .forms import UserRegisterForm
@@ -21,6 +20,8 @@ def login_view(request):
         password = form.cleaned_data.get("password")
         user = authenticate(username=username, password=password)
         login(request, user)
+        return redirect("../questions")
+    elif request.user.is_authenticated():
         return redirect("../questions")
 
     return render(request, "personal/form.html", {"form": form, "title": title})
