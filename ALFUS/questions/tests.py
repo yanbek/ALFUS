@@ -1,5 +1,6 @@
 import datetime
 
+from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
 
@@ -10,12 +11,24 @@ class QuestionModelsTest(TestCase):
 
 
     def setUp(self):
-        self.do_print = True
+        self.do_print = False
+
+        # Make subject
+        self.subject = Subject(name="Matte 1")
+        self.subject.save()
+
+        # Make chapters
+        self.cha1 = Chapter(name="1",
+                            description="A very fun chapter about calculus. Great stuff, must read.",
+                            part_of=self.subject)
+        self.cha2 = Chapter(name="2", part_of=self.subject)
+        self.cha1.save()
+        self.cha2.save()
 
         # Make questions
-        self.q1 = Question(question_text="This is a test text.", pub_date=timezone.now())
+        self.q1 = Question(question_text="This is a test text.", pub_date=timezone.now(), chapter=self.cha1)
         self.q1.save()
-        self.q2 = Question(question_text="This is another test text.", pub_date=timezone.now(), difficulty=0.5)
+        self.q2 = Question(question_text="This is another test text.", pub_date=timezone.now(), difficulty=0.5, chapter=self.cha1)
         self.q2.save()
 
         # Make choices
@@ -26,20 +39,17 @@ class QuestionModelsTest(TestCase):
         for i in self.q2Choices:
             i.save()
 
-        # Make subject
-        self.subject = Subject(name="Matte 1")
-
-        # Make chapters
-        self.cha1 = Chapter(name="1",
-            description="A very fun chapter about calculus. Great stuff, must read.", part_of=self.subject)
-        self.cha2 = Chapter(name="2", part_of=self.subject)
-
         # Make users
-        #TODO: Fix the user code
-        #self.u1 = User.objects.create_user("user1", "user1@mail.com", "password")
-        #self.u2 = User.objects.create_user("user2", "user2@mail.com", "password")
+        try:
+            self.u1 = User.objects.create_user("user1", "user1@mail.com", "password")
+            self.u2 = User.objects.create_user("user2", "user2@mail.com", "password")
+        except IntegrityError:
+            #The users are already created
+            pass
 
-        #TODO: Add the rest of the tables and write test for them
+
+
+
 
 
 
@@ -52,10 +62,10 @@ class QuestionModelsTest(TestCase):
 
         # Test that setting illegal values raises an exception
         with self.assertRaises(Exception):
-            q = Question(question_text="Test", pub_date=timezone.now(), difficulty=3)
+            q = Question(question_text="Test", pub_date=timezone.now(), difficulty=3, chapter=self.cha1)
             q.save()
         with self.assertRaises(Exception):
-            q = Question(question_text="Test", pub_date=timezone.now(), difficulty=-1)
+            q = Question(question_text="Test", pub_date=timezone.now(), difficulty=-1, chapter=self.cha1)
             q.save()
 
     def test_choice_added(self):
@@ -93,6 +103,10 @@ class QuestionModelsTest(TestCase):
         # Creating a choice without a question
         with self.assertRaises(Exception):
             Choice.objects.create(choice_text="Test name")
+
+    def test_subject_added(self):
+        self.assertTrue(len(Subject.objects.all()) == 1)
+
 
 
 

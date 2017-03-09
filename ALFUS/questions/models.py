@@ -37,7 +37,7 @@ class Question(models.Model):
     pub_date = models.DateTimeField('date published')
     # 0 is the easiest and 1 is the hardest
     difficulty = models.FloatField(default=0.5)
-    chapter = models.ForeignKey(Chapter, blank=True, null=True)
+    chapter = models.ForeignKey(Chapter)
 
     def __str__(self):
         return self.question_text
