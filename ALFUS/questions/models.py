@@ -39,6 +39,7 @@ class Question(models.Model):
     difficulty = models.FloatField(default=0.5)
     chapter = models.ForeignKey(Chapter)
 
+
     def __str__(self):
         return self.question_text
 
