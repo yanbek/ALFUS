@@ -47,7 +47,12 @@ class QuestionModelsTest(TestCase):
             #The users are already created
             pass
 
+        # Make the relationship between user and chapter
+        temp = hasChapter(user_id=self.u1.pk, chapter_id=self.cha1.pk)
+        temp.save()
 
+        # Make relationship between user and questions
+        pass
 
 
 
@@ -80,10 +85,16 @@ class QuestionModelsTest(TestCase):
 
 
     def test_choice_cascade(self):
+        # Creating question and choices
+        q = Question(question_text="This is a test text.", pub_date=timezone.now(), chapter=self.cha1)
+        q.save()
+        pk = q.pk
+        choices = [Choice(question=q, choice_text="Choice number " + str(i), correct=i == 0) for i in range(0, 3)]
+        for i in choices:
+            i.save()
+        q.delete()
         # Test that the choices are deleted
         # when its question is deleted
-        pk = self.q1.pk
-        self.q1.delete()
         query_result = Choice.objects.filter(question_id=pk)
         self.assertEqual(len(query_result), 0)
         if self.do_print: print("Query 1: " + str(query_result))
@@ -93,8 +104,7 @@ class QuestionModelsTest(TestCase):
         self.assertTrue(len(query_result) == 5)
         if self.do_print: print("Query 2: " + str(query_result))
 
-        # Restore the setUp state
-        self.setUp()
+
         if self.do_print: print("Questions", Question.objects.all())
         if self.do_print: print("Choices to question1", Choice.objects.filter(question_id=self.q1.pk))
         if self.do_print: print("Choices to question2", Choice.objects.filter(question_id=self.q2.pk))
@@ -106,6 +116,49 @@ class QuestionModelsTest(TestCase):
 
     def test_subject_added(self):
         self.assertTrue(len(Subject.objects.all()) == 1)
+
+    def test_chapter_user_relationship(self):
+        # Test that the relationship is correctly created with the default skill rating
+        self.assertEqual(hasChapter.objects.all()[0].skill_rating_chapter, 0.5)
+
+        # Change the skill_rating to a legal value
+        u2cha2 = hasChapter(user=self.u2, chapter=self.cha2, skill_rating_chapter=0.2)
+        u2cha2.save()
+        temp_relationship = hasChapter.objects.get(id=u2cha2.pk)
+        temp_relationship.skill_rating_chapter = 0.8
+        temp_relationship.save()
+
+        # Change the skill_rating to a illegal value
+        with self.assertRaises(Exception):
+            temp_relationship = hasChapter.objects.get(id=u2cha2.pk)
+            temp_relationship.skill_rating_chapter = 7.8
+            temp_relationship.save()
+
+        hasChapter.objects.get(id=u2cha2.pk).delete()
+
+    def test_hasAnswered(self):
+        # Create user and question
+        user = User.objects.create_user("User", "mail@mail.com", "password")
+        q = Question(question_text="This is a test text.", pub_date=timezone.now(), chapter=self.cha1)
+        q.save()
+        choices = [Choice(question=q, choice_text="Choice number " + str(i), correct=i == 0) for i in range(0, 3)]
+        for i in choices:
+            i.save()
+
+        # Create a hasAnswered relationship
+        user_has_answered_q = hasAnswered(submitted_by=user, submitted_answer=q, wasCorrect=False)
+        user_has_answered_q.save()
+        self.assertEqual(len(hasAnswered.objects.all()), 1)
+
+        # Test cascade on delete
+        user.delete()
+        self.assertEqual(len(hasAnswered.objects.all()), 0)
+
+        # Cleanup
+        q.delete()
+
+
+
 
 
 

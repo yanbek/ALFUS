@@ -70,12 +70,7 @@ class hasAnswered(models.Model):
     submitted_by = models.ForeignKey(User)
     submitted_answer = models.ForeignKey(Question)
 
-
-class hasSubject(models.Model):
-    skill_rating_subject = models.FloatField(default=0.5)
-    user = models.ForeignKey(User)
-    subject = models.ForeignKey(Subject)
-
+# A table for the relationship between user and chapter
 class hasChapter(models.Model):
     skill_rating_chapter = models.FloatField(default=0.5)
     user = models.ForeignKey(User)
