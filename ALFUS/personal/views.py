@@ -1,8 +1,8 @@
-from django.shortcuts import render
-from .forms import LoginForm
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect
-
+from django.shortcuts import render, redirect
+from django.views.generic import View
+from .forms import UserRegisterForm
+from .forms import UserLoginForm
 
 def index(request):
     return render(request, 'personal/home.html')
@@ -13,21 +13,36 @@ def contact(request):
 
 
 def login_view(request):
-    if request.method == "POST":
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            u = form.cleaned_data["username"]
-            p = form.cleaned_data["password"]
-            user = authenticate(username = u, password = p)
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return HttpResponseRedirect("/")
-                else:
-                    print("The account has been disabled!")
-            else:
-                print("The username and password were incorrect.")
+    title = "Login"
+    form = UserLoginForm(request.POST or None)
+    if form.is_valid():
+        username = form.cleaned_data.get("username")
+        password = form.cleaned_data.get("password")
+        user = authenticate(username=username, password=password)
+        login(request, user)
+        return redirect("../questions")
+    elif request.user.is_authenticated():
+        return redirect("../questions")
 
-    else:
-        form = LoginForm()
-        return render(request, "personal/login.html", {"form": form})
+    return render(request, "personal/form.html", {"form": form, "title": title})
+
+
+def logout_view(request):
+    logout(request)
+    return render(request, "personal/home.html")
+
+
+def register_view(request):
+    title = "Register"
+    form = UserRegisterForm(request.POST or None)
+    if form.is_valid():
+        user = form.save(commit=False)
+        password = form.cleaned_data.get("password")
+        user.set_password(password)
+        user.save()
+        new_user = authenticate(username=user.username, password=password)
+        login(request, new_user)
+        return redirect("/")
+
+    context = {"form": form, "title": title}
+    return render(request, "personal/form.html", context)

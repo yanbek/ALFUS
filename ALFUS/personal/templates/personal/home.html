@@ -1,8 +1,11 @@
-{% extends "personal/header.html" %}
+{% extends "personal/base.html" %}
 
-{% block content %}
-<p>ALFUS</p>
-
-{% include "personal/includes/htmlsnippet.html" %}
-
+{% block content%}
+<div id="frontpage">
+<h1>Get started with ALFUS</h1>
+<h3>The world's first Adaptive Learning System For University Students</h3>
+    </div>
+<br>
+<a href="{% url 'register' %}" class="btn btn-primary my-btn">Sign up</a>
+<a href="{% url 'login' %}" class="btn btn-primary my-btn2">Log In</a>
 {% endblock %}

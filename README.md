@@ -9,3 +9,6 @@ Hvis ikke dette fungerer så slett db.sqlite3 og kjør
 makemigrations og migrate pånytt.
 
 Skriv manage.py createsuperuser for å lage adminbruker. 
+
+Crispy forms må installeres for å kjøre serveren.
+pip install django-crispy-forms eller pip3 install django-crispy-forms

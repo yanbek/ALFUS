@@ -1,0 +1,18 @@
+{% extends "personal/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content%}
+<div class="panel panel-default">
+      <div class="panel-heading">{{ title }}</div>
+      <div class="panel-body">
+<form method="post" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    <table class="table">
+        {{ form|crispy }}
+    </table>
+    <input type="submit" class="btn btn-default" value="{{ title }}"/>
+</form>
+      </div>
+    </div>
+
+{% endblock %}

@@ -3,9 +3,14 @@ from django.http import Http404
 from .models import Choice, Question, hasAnswered, hasChapter, Chapter
 from collections import defaultdict
 from django.db.models import Max
+from django.utils import timezone
 import math
+from random import randint
+from django.contrib.auth.decorators import login_required
 
 
+
+@login_required(login_url="/login/")
 def index(request):
     question_list = Question.objects.all()
 
@@ -13,10 +18,10 @@ def index(request):
     for question in question_list:
         question_dict[question.chapter_id].append((question.id, question.difficulty))
     request.session['question_dict'] = question_dict
-
     return render(request, 'questions/index.html', {'question_list': question_list})
 
 
+@login_required(login_url="/login/")
 def detail(request, question_id):
     try:
         question = get_object_or_404(Question, pk=question_id)
@@ -25,10 +30,11 @@ def detail(request, question_id):
     return render(request, 'questions/detail.html', {'question': question})
 
 
+@login_required(login_url="/login/")
 def answer(request, question_id):
     question_dict = request.session['question_dict']
-    question = get_object_or_404(Question, pk=question_id)
 
+    question = get_object_or_404(Question, pk=question_id)
     try:
         # Save answer
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
@@ -101,3 +107,4 @@ def answer(request, question_id):
         return render(request, 'questions/results.html',
                       {'question': question, 'is_correct': selected_choice.is_correct,
                        'next_question': next_question_id})
+

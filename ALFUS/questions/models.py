@@ -1,4 +1,6 @@
 import datetime
+
+from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -75,20 +77,6 @@ class hasChapter(models.Model):
     skill_rating_chapter = models.FloatField(default=0.5)
     user = models.ForeignKey(User)
     chapter = models.ForeignKey(Chapter)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
