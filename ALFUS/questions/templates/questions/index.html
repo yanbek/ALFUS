@@ -1,5 +1,11 @@
 {% extends "questions/base.html" %}
 {% block content %}
+
+    <form method='GET' action='/questions/search/'>
+    <input type='text' name='q' placeholder='Search posts' value= {{ request.GET.q }} />
+    <input type='submit' value='Search'/>
+    </form>
+
     {% if question_list %}
     <ul class="list-group">
         {% for question in question_list %}
