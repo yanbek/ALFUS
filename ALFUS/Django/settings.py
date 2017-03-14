@@ -26,16 +26,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-<<<<<<< HEAD
-
 CRON_CLASSES = [
     "questions.cron.Difficulty_adjustment",
     # ...
 ]
 
-
-=======
->>>>>>> refs/remotes/origin/master
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,13 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-<<<<<<< HEAD
     'django_cron',
-=======
 
     #third party
     'crispy_forms'
->>>>>>> refs/remotes/origin/master
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
