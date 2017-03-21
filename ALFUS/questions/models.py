@@ -36,7 +36,7 @@ class Chapter(models.Model):
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
-     pub_date = models.DateTimeField('date published')
+    pub_date = models.DateTimeField('date published')
     # 0 is the easiest and 1 is the hardest
     difficulty = models.FloatField(default=0.5)
     topic_text = models.CharField(max_length=200,default="x")
