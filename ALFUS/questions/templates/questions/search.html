@@ -13,8 +13,8 @@
     <!-- Inside search.html -->
     <ul class="list-group">
         {% for question in topics %}
-        <li class="list-group-item"><a href="{% url 'questions:detail' question.id %}">{{ question.question_text }}</a>
-        {{ question.topic_text }}
+        <li class="list-group-item"> {{ question.topic_text }}  &emsp; &emsp;  
+            <a href="{% url 'questions:detail' question.id %}">{{ question.question_text }}</a>
         </li>
         {% endfor %}
     </ul>
