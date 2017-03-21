@@ -1,9 +1,13 @@
 {% extends "questions/base.html" %}
 {% block content %}
 <div class="container">
-    <h1>{{ question.question_text }}</h1>
-    <h3>{{ is_correct}}</h3>
+    <body>
+    <div class="container">
+        <h1>{{ question.question_text }}</h1>
+        <h3>{{ is_correct}}</h3>
 
-    <a href="{% url 'questions:detail' random_q%}" class="btn btn-default" role="button">Next question</a>
+        <a href="{% url 'questions:detail' next_question%}" class="btn btn-default" role="button">Next question</a>
+    </div>
+    </body>
 </div>
 {% endblock %}
