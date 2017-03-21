@@ -8,4 +8,6 @@ urlpatterns = [
     url(r'^(?P<question_id>\d+)/$', views.detail, name='detail'),
     url(r'^(?P<question_id>[0-9]+)/results/$', views.answer, name='answer'),
     url(r"^logout/", p_views.logout_view, name='logout'),
+    url(r"^search/$", views.search, name='search'),
+
 ]

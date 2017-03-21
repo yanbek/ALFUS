@@ -1,4 +1,6 @@
-from django.shortcuts import get_object_or_404, render, redirect
+
+from django.utils import timezone
+from django.shortcuts import get_object_or_404, render, redirect, render_to_response
 from django.http import Http404
 from .models import Choice, Question, hasAnswered, hasChapter, Chapter
 from collections import defaultdict
@@ -9,6 +11,15 @@ from random import randint
 from django.contrib.auth.decorators import login_required
 
 
+
+@login_required(login_url="/login/")
+def search(request):
+    try:
+        q = request.GET['q']
+        topics = Question.objects.filter(topic_text__icontains=q)
+        return render_to_response('questions/search.html', {'topics': topics, 'q':q})
+    except KeyError:
+        return render_to_response('questions/search.html')
 
 @login_required(login_url="/login/")
 def index(request):
