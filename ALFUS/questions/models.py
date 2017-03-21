@@ -76,6 +76,8 @@ class hasChapter(models.Model):
     user = models.ForeignKey(User)
     chapter = models.ForeignKey(Chapter)
 
+    def __str__(self):
+        return str(self.skill_rating_chapter)
 
 
 

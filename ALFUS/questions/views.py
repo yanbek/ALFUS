@@ -36,9 +36,15 @@ def index(request):
 def detail(request, question_id):
     try:
         question = get_object_or_404(Question, pk=question_id)
+        # Check if the hasChapter relationship exists. If not exists, create one.
+        if not hasChapter.objects.filter(user=request.user, chapter=question.chapter_id).exists():
+            haschapter = hasChapter(user=request.user, chapter=Chapter.objects.get(pk=question.chapter_id))
+            haschapter.save()
+        else:
+            haschapter = hasChapter.objects.get(user=request.user, chapter=question.chapter_id)
     except Question.DoesNotExist:
         raise Http404("Question doesn't exist")
-    return render(request, 'questions/detail.html', {'question': question})
+    return render(request, 'questions/detail.html', {'question': question, 'haschapter': haschapter})
 
 
 @login_required(login_url="/login/")
@@ -68,11 +74,8 @@ def answer(request, question_id):
         correct_answers = sum(answer_list)
         updated_skill_rating = float(correct_answers) / float(total_answers)
 
-        # Check if the hasChapter relationship exists. If not exists, create one.
-        if not hasChapter.objects.filter(user=request.user, chapter=question.chapter_id).exists():
-            user_hasChapter_current = hasChapter(user=request.user, chapter=Chapter.objects.get(pk=question.chapter_id))
-        else:
-            user_hasChapter_current = hasChapter.objects.get(user=request.user, chapter=question.chapter_id)
+        # Update skill rating
+        user_hasChapter_current = hasChapter.objects.get(user=request.user, chapter=question.chapter_id)
         user_hasChapter_current.skill_rating_chapter = updated_skill_rating
         user_hasChapter_current.save()
 
