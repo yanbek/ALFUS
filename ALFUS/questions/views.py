@@ -63,6 +63,9 @@ def answer(request, question_id):
             new_answer.answer_attempt = old_answer.answer_attempt + 1
         new_answer.save()
 
+        user_hasChapter_current = hasChapter.objects.get(user=request.user, chapter=question.chapter_id)
+
+        '''
         # Find new chapter skill rating. The rating is calculated by the formula  total correct answer / total answer
         prior_user_answers_to_current_chapter = hasAnswered.objects.filter(submitted_by=request.user,
                                                                            submitted_answer__chapter=question.chapter_id)
@@ -72,16 +75,29 @@ def answer(request, question_id):
             answer_list.append(prior_answer.wasCorrect)
         total_answers = len(answer_list)
         correct_answers = sum(answer_list)
-        updated_skill_rating = float(correct_answers) / float(total_answers)
 
-        # Update skill rating
-        user_hasChapter_current = hasChapter.objects.get(user=request.user, chapter=question.chapter_id)
-        user_hasChapter_current.skill_rating_chapter = updated_skill_rating
+        updated_skill_rating = float(correct_answers) / float(total_answers)
+        '''
+
+
+        weight = 0.2
+        if isCorrect:
+            adjustment = question.difficulty-user_hasChapter_current.skill_rating_chapter+1
+
+        else:
+            adjustment = question.difficulty-user_hasChapter_current.skill_rating_chapter-1
+
+        # Adjusting with logistic function (squashing function)
+        inverse_log_fun_current_rating = -math.log(1/user_hasChapter_current.skill_rating_chapter - 1)
+        new_rating = 1/(1+math.exp(-(adjustment*weight+inverse_log_fun_current_rating)))
+
+        user_hasChapter_current.skill_rating_chapter = new_rating
         user_hasChapter_current.save()
 
         # Get next question by selecting an unanswered question that match the current skill rating.
         # Prioritize chapters with lower skill rating.
         # The question that gives the lowest delta is the winner.
+
         next_question_id = None
         chapter_priority_constant = 1
         delta = 1.0
