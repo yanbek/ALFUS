@@ -63,16 +63,6 @@ class QuestionModelsTest(TestCase):
         self.assertTrue(self.q1 in Question.objects.all())
         self.assertTrue(self.q2 in Question.objects.all())
 
-    def test_adding_illegal_questions(self):
-
-        # Test that setting illegal values raises an exception
-        with self.assertRaises(Exception):
-            q = Question(question_text="Test", pub_date=timezone.now(), difficulty=3, chapter=self.cha1)
-            q.save()
-        with self.assertRaises(Exception):
-            q = Question(question_text="Test", pub_date=timezone.now(), difficulty=-1, chapter=self.cha1)
-            q.save()
-
     def test_choice_added(self):
         # Test that the choices are in the database
         self.assertTrue(len(Choice.objects.all()) > 0)
@@ -127,12 +117,6 @@ class QuestionModelsTest(TestCase):
         temp_relationship = hasChapter.objects.get(id=u2cha2.pk)
         temp_relationship.skill_rating_chapter = 0.8
         temp_relationship.save()
-
-        # Change the skill_rating to a illegal value
-        with self.assertRaises(Exception):
-            temp_relationship = hasChapter.objects.get(id=u2cha2.pk)
-            temp_relationship.skill_rating_chapter = 7.8
-            temp_relationship.save()
 
         hasChapter.objects.get(id=u2cha2.pk).delete()
 

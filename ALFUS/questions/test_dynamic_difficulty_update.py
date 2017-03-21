@@ -49,9 +49,10 @@ class DynamicDifficultyTest(TestCase):
 
     def test_difficulty_adjustment_q1(self):
         # Make all the users answer wrong
-        old_difficulty = self.q1.difficulty
+        q1pk = self.q1.pk
+        old_difficulty = Question.objects.get(pk=q1pk).difficulty
         for user in self.users:
-            has_answered = hasAnswered(wasCorrect=False, submitted_by=user, submitted_answer=self.q1)
+            has_answered = hasAnswered(wasCorrect=False, submitted_by=user, submitted_answer=Question.objects.get(pk=q1pk))
             has_answered.save()
 
         # Make a instance of the difficulty_adjustment class
@@ -59,14 +60,15 @@ class DynamicDifficultyTest(TestCase):
         self.da.do()
 
         # Check if the difficulty has increased
-        new_difficulty = self.q1.difficulty
+        new_difficulty = Question.objects.get(pk=q1pk).difficulty
         self.assertTrue(old_difficulty < new_difficulty)
 
     def test_difficulty_adjustment_q2(self):
         # Make all the users answer right
-        old_difficulty = self.q2.difficulty
+        q2pk = self.q2.pk
+        old_difficulty = Question.objects.get(pk=q2pk).difficulty
         for user in self.users:
-            has_answered = hasAnswered(wasCorrect=True, submitted_by=user, submitted_answer=self.q2)
+            has_answered = hasAnswered(wasCorrect=True, submitted_by=user, submitted_answer=Question.objects.get(pk=q2pk))
             has_answered.save()
 
         # Make a instance of the difficulty_adjustment class
@@ -74,5 +76,5 @@ class DynamicDifficultyTest(TestCase):
         self.da.do()
 
         # Check if the difficulty has decreased
-        new_difficulty = self.q2.difficulty
+        new_difficulty = Question.objects.get(pk=q2pk).difficulty
         self.assertTrue(old_difficulty > new_difficulty)
