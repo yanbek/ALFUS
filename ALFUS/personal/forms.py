@@ -12,7 +12,7 @@ class LoginForm(forms.Form):
 class UserRegisterForm(forms.ModelForm):
     email = forms.EmailField(label="Email address")
     email2 = forms.EmailField(label="Confirm email address")
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     class Meta:
         model = User
         fields = ["username", "email", "email2", "password"]
