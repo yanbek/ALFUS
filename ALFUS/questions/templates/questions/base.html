@@ -46,10 +46,8 @@
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#tf-home">Home</a></li>
-                    <li><a href="#tf-service">Services</a></li>
-                    <li><a href="#tf-portfolio">Portfolio</a></li>
-                    <li><a href="#tf-about">About</a></li>
+                    <li><a href="{% url 'questions:index' %}">Home</a></li>
+                    <li><a href="{% url 'questions:search' %}">Search</a></li>
                     <li><a href="{% url 'questions:logout' %}">Logout</a></li>
                 </ul>
             </div><!-- /.navbar-collapse -->

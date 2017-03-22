@@ -3,7 +3,7 @@
 {% block content %}
     <h1> Question list</h1>
 
-   <form method='GET' action='/questions/search/'>
+   <form method='GET' action="{% url 'questions:search' %}">
     <input type='text' name='q' placeholder='Search posts' value= {{ request.GET.q }} />
     <input type='submit' value='Search'/>
 </form>
