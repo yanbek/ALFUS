@@ -29,12 +29,13 @@ def index(request):
 @login_required(login_url="/login/")
 def index_questions(request, subject_id):
     question_list = Question.objects.filter(chapter__part_of_id=subject_id)
+    subject_name = Subject.objects.get(pk=subject_id)
 
     question_dict = defaultdict(list)
     for question in question_list:
         question_dict[question.chapter_id].append((question.id, question.difficulty))
     request.session['question_dict'] = question_dict
-    return render(request, 'questions/index_questions.html', {'question_list': question_list, 'subject_id': subject_id})
+    return render(request, 'questions/index_questions.html', {'question_list': question_list, 'subject_id': subject_id, 'subject_name':subject_name})
 
 
 @login_required(login_url="/login/")

@@ -2,25 +2,36 @@
 
 {% block content %}
 
-     <h1> Question list</h1>
 
-   <form method='GET' action="{% url 'questions:index_questions' subject_id %}">
-    <input type='text' name='q' placeholder='Search posts' value= {{ request.GET.q }} />
-    <input type='submit' value='Search'/>
-</form>
+    <div class="container">
+        <div class="container">
+            <h2> {{ subject_name }} </h2>
+            <h3> Need some stats here..</h3>
+            <a href="{% url 'questions:detail' subject_id question_list.first.id %}" class="btn btn-default"
+               role="button">Start Test</a>
 
- <div style="padding-top: 10px;">
-        {% if question_list %}
-     <!-- Inside index.html -->
-        <ul class="list-group">
-            {% for question in question_list %}
-        <li class="list-group-item"> {{ question.topic_text }}  &emsp; &emsp;  
-            <a href="{% url 'questions:detail' subject_id question.id %}">{{ question.question_text }}</a>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>No questions are available.</p>
-        {% endif %}
+        </div>
+
+
+        <h3> Question list</h3>
+
+        <form method='GET' action="{% url 'questions:index_questions' subject_id %}">
+            <input type='text' name='q' placeholder='Search posts' value={{ request.GET.q }}/>
+            <input type='submit' value='Search'/>
+        </form>
+
+        <div style="padding-top: 10px;">
+            {% if question_list %}
+                <!-- Inside index.html -->
+                <ul class="list-group">
+                    {% for question in question_list %}
+                        <li class="list-group-item"> {{ question.topic_text }}  &emsp; &emsp;
+                        <a href="{% url 'questions:detail' subject_id question.id %}">{{ question.question_text }}</a>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No questions are available.</p>
+            {% endif %}
+        </div>
     </div>
-
 {% endblock %}
