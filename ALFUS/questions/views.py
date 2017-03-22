@@ -38,7 +38,7 @@ def index_questions(request, subject_id):
 
 
 @login_required(login_url="/login/")
-def detail(request, question_id):
+def detail(request, question_id, subject_id):
     try:
         question = get_object_or_404(Question, pk=question_id)
         # Check if the hasChapter relationship exists. If not exists, create one.
@@ -49,11 +49,11 @@ def detail(request, question_id):
             haschapter = hasChapter.objects.get(user=request.user, chapter=question.chapter_id)
     except Question.DoesNotExist:
         raise Http404("Question doesn't exist")
-    return render(request, 'questions/detail.html', {'question': question, 'haschapter': haschapter})
+    return render(request, 'questions/detail.html', {'question': question, 'haschapter': haschapter, 'subject_id': subject_id})
 
 
 @login_required(login_url="/login/")
-def answer(request, question_id):
+def answer(request, question_id, subject_id):
     question_dict = request.session['question_dict']
 
     question = get_object_or_404(Question, pk=question_id)
@@ -141,5 +141,5 @@ def answer(request, question_id):
     else:
         return render(request, 'questions/results.html',
                       {'question': question, 'is_correct': selected_choice.is_correct,
-                       'next_question': next_question_id})
+                       'next_question': next_question_id, 'subject_id': subject_id})
 
