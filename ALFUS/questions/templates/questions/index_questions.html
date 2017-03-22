@@ -1,0 +1,26 @@
+{% extends "questions/base.html" %}
+
+{% block content %}
+
+     <h1> Question list</h1>
+
+   <form method='GET' action="{% url 'questions:index_questions' subject_id %}">
+    <input type='text' name='q' placeholder='Search posts' value= {{ request.GET.q }} />
+    <input type='submit' value='Search'/>
+</form>
+
+ <div style="padding-top: 10px;">
+        {% if question_list %}
+     <!-- Inside index.html -->
+        <ul class="list-group">
+            {% for question in question_list %}
+        <li class="list-group-item"> {{ question.topic_text }}  &emsp; &emsp;  
+            <a href="{% url 'questions:detail' question.id %}">{{ question.question_text }}</a>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No questions are available.</p>
+        {% endif %}
+    </div>
+
+{% endblock %}
