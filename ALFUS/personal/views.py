@@ -1,8 +1,8 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
-from django.views.generic import View
 from .forms import UserRegisterForm
 from .forms import UserLoginForm
+
 
 def index(request):
     return render(request, 'personal/home.html')
