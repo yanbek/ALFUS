@@ -351,4 +351,7 @@ nav#tf-footer {
     bottom: 0;
     width: 100vw;
 }
+.reset-link {
+    color: #0f0f0f;
+}
 

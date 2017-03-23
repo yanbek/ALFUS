@@ -48,7 +48,14 @@ INSTALLED_APPS = [
     'crispy_forms'
 ]
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'alfustest@gmail.com'
+SERVER_EMAIL = 'alfustest@gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'alfustest@gmail.com'
+EMAIL_HOST_PASSWORD = '5vYf!kg5EXzTDKq'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 

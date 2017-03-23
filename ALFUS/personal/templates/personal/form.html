@@ -4,7 +4,6 @@
 {% block content%}
 <div class="panel panel-default">
       <div class="panel-heading">{{ title }}</div>
-      <div class="panel-body">
 <form method="post" action="" enctype="multipart/form-data">
     {% csrf_token %}
     <table class="table">
@@ -12,6 +11,7 @@
     </table>
     <input type="submit" class="btn btn-default" value="{{ title }}"/>
 </form>
+    <div class="reset-link"><a href="{% url 'password_reset' %}">Forgot password?</a></div>
       </div>
     </div>
 
