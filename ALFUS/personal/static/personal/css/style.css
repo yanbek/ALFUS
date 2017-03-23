@@ -34,7 +34,7 @@ p {
 }
 
 a {
-    color: #ffffff;
+    color: #000000;
     transition: all 0.8;
 }
 
@@ -355,3 +355,14 @@ nav#tf-footer {
     color: #0f0f0f;
 }
 
+.pull-right a {
+    color: white;
+}
+
+li {
+    list-style-type: none;
+}
+
+ul {
+    list-style-type: none;
+}
