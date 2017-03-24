@@ -298,10 +298,18 @@ nav#tf-footer {
 	padding: 3% 0 2% 0;
 	color: #f1f1f1;
 	position: absolute;
-	bottom: 0;
-    width: 100%
+    bottom: 0;
+    width: 100vw;
 }
 
 nav#tf-footer a {
 	color: white;
+}
+
+#homepage {
+	position: absolute;
+    top: 0;
+    bottom: 0;
+    overflow: auto;
+    width: 100vw;
 }
