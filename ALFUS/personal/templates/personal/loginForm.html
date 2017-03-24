@@ -9,5 +9,7 @@
         {{ form|crispy }}
     <input type="submit" class="btn btn-default" value="{{ title }}"/>
 </form>
-
+    <div class="reset-link"><a href="{% url 'password_reset' %}">Forgot password?</a></div>
+      </div>
+    </div>
 {% endblock %}

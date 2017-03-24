@@ -24,7 +24,7 @@ def login_view(request):
     elif request.user.is_authenticated():
         return redirect("../questions")
 
-    return render(request, "personal/form.html", {"form": form, "title": title})
+    return render(request, "personal/loginForm.html", {"form": form, "title": title})
 
 
 def logout_view(request):
