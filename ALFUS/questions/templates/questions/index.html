@@ -2,7 +2,7 @@
 
 {% block content %}
 
-     <h1> Question list</h1>
+     <h1> Courses</h1>
 
    <form method='GET' action="{% url 'questions:index' %}">
     <input type='text' name='q' placeholder='Search posts'/>
@@ -10,16 +10,17 @@
 </form>
 
  <div style="padding-top: 10px;">
-        {% if question_list %}
+        {% if subject_list %}
      <!-- Inside index.html -->
         <ul class="list-group">
-            {% for question in question_list %}
-        <li class="list-group-item"> {{ question.topic_text }}  &emsp; &emsp;  
-            <a href="{% url 'questions:detail' question.id %}">{{ question.question_text }}</a>
+            {% for subject in subject_list %}
+        <li class="list-group-item">
+            <a href="{% url 'questions:index_questions' subject.id %}">{{ subject }}</a>
+             &emsp;  Status
             {% endfor %}
         </ul>
         {% else %}
-        <p>No questions are available.</p>
+        <p>No courses are available.</p>
         {% endif %}
     </div>
 

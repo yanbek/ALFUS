@@ -2,7 +2,7 @@
 from django.utils import timezone
 from django.shortcuts import get_object_or_404, render, redirect, render_to_response
 from django.http import Http404
-from .models import Choice, Question, hasAnswered, hasChapter, Chapter
+from .models import Choice, Question, hasAnswered, hasChapter, Chapter, Subject
 from collections import defaultdict
 from django.db.models import Max
 from django.utils import timezone
@@ -23,17 +23,23 @@ def search(request):
 
 @login_required(login_url="/login/")
 def index(request):
-    question_list = Question.objects.all()
+    subject_list = Subject.objects.all()
+    return render(request, 'questions/index.html', {'subject_list': subject_list})
+
+@login_required(login_url="/login/")
+def index_questions(request, subject_id):
+    question_list = Question.objects.filter(chapter__part_of_id=subject_id)
+    subject_name = Subject.objects.get(pk=subject_id)
 
     question_dict = defaultdict(list)
     for question in question_list:
         question_dict[question.chapter_id].append((question.id, question.difficulty))
     request.session['question_dict'] = question_dict
-    return render(request, 'questions/index.html', {'question_list': question_list})
+    return render(request, 'questions/index_questions.html', {'question_list': question_list, 'subject_id': subject_id, 'subject_name':subject_name})
 
 
 @login_required(login_url="/login/")
-def detail(request, question_id):
+def detail(request, question_id, subject_id):
     try:
         question = get_object_or_404(Question, pk=question_id)
         # Check if the hasChapter relationship exists. If not exists, create one.
@@ -44,11 +50,11 @@ def detail(request, question_id):
             haschapter = hasChapter.objects.get(user=request.user, chapter=question.chapter_id)
     except Question.DoesNotExist:
         raise Http404("Question doesn't exist")
-    return render(request, 'questions/detail.html', {'question': question, 'haschapter': haschapter})
+    return render(request, 'questions/detail.html', {'question': question, 'haschapter': haschapter, 'subject_id': subject_id})
 
 
 @login_required(login_url="/login/")
-def answer(request, question_id):
+def answer(request, question_id, subject_id):
     question_dict = request.session['question_dict']
 
     question = get_object_or_404(Question, pk=question_id)
@@ -136,5 +142,5 @@ def answer(request, question_id):
     else:
         return render(request, 'questions/results.html',
                       {'question': question, 'is_correct': selected_choice.is_correct,
-                       'next_question': next_question_id})
+                       'next_question': next_question_id, 'subject_id': subject_id})
 
