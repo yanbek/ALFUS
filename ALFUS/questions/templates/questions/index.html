@@ -3,12 +3,7 @@
 {% block content %}
 
      <h1> Courses</h1>
-
-   <form method='GET' action="{% url 'questions:index' %}">
-    <input type='text' name='q' placeholder='Search posts'/>
-    <input type='submit' value='Search'/>
-</form>
-
+    
  <div style="padding-top: 10px;">
         {% if subject_list %}
      <!-- Inside index.html -->
