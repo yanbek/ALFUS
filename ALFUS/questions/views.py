@@ -135,9 +135,12 @@ def answer(request, question_id, subject_id):
 
     except (KeyError, Choice.DoesNotExist):  # Redisplay the question voting form.
 
-        return render(request, 'questions/detail.html', {
-            'question': question,
-            '   error_message': "You didn't select a choice."
+        haschapter = hasChapter.objects.get(user=request.user, chapter=Chapter.objects.get(pk=question.chapter_id))
+
+
+        return render(request, 'questions/detail.html',  {
+            'question': question, 'subject_id': subject_id,
+            'error_message': "You didn't select a choice.", 'haschapter' : haschapter
         })
     else:
         return render(request, 'questions/results.html',
