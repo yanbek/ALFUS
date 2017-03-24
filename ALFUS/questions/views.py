@@ -86,7 +86,7 @@ def answer(request, question_id, subject_id):
         '''
 
 
-        weight = 0.2
+        weight = 0.4
         if isCorrect:
             adjustment = question.difficulty-user_hasChapter_current.skill_rating_chapter+1
 
