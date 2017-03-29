@@ -15,7 +15,8 @@ class UserRegisterForm(forms.ModelForm):
     password = forms.CharField(min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     class Meta:
         model = User
-        fields = ["username", "email", "email2", "password"]
+        fields = ["username", "first_name","last_name", "email", "email2", "password"]
+
 
     def clean_email2(self):
         email = self.cleaned_data.get("email")
