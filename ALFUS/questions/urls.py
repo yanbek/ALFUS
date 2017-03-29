@@ -10,5 +10,7 @@ urlpatterns = [
     url(r'^(?P<subject_id>[0-9]+)/(?P<question_id>[0-9]+)/results/$', views.answer, name='answer'),
     url(r"^logout/", p_views.logout_view, name='logout'),
     url(r"^search/$", views.search, name='search'),
+    url(r"^profile/$", views.profile, name='profile'),
+
 
 ]
