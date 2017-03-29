@@ -10,6 +10,9 @@ import math
 from random import randint
 from django.contrib.auth.decorators import login_required
 
+@login_required(login_url="/login/")
+def profile(request):
+    return render(request, 'questions/profile.html')
 
 
 @login_required(login_url="/login/")
