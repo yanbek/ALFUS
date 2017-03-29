@@ -1,0 +1,14 @@
+{% extends "questions/base.html" %}
+
+{% block content %}
+
+    <h3>  PROFILE PAGE </h3>
+
+
+    <li> {{ user.first_name }} {{ user.last_name }} </li>
+     <li> Username: {{ user.username }}</li>
+    <li>E-mail: {{ user.email }}</li>
+
+
+
+{% endblock %}
