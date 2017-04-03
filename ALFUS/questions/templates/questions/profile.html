@@ -2,12 +2,43 @@
 
 {% block content %}
 
-    <h3>  PROFILE PAGE </h3>
+   <br>
+<div class="container">
+  <div class="row">
+    <div class="col-md-9">
+          <div class="row">
+          <div class="row">
+			<div class="col-md-4 text-center">
+              <p> Profile pic</p>
+            </div>
+            <div class="col-md-8">
+              <div class="row">
+                <div class="col-md-12">
+                  <h1 class="only-bottom-margin">{{ user.first_name }} {{ user.last_name }} 's profile </h1>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                    <span class="text-muted">Username:</span> {{ user.username }} <br>
+                  <span class="text-muted">Email:</span> {{ user.email }} <br>
+                </div>
+                <div class="col-md-6 text-center" >
+                      <a href="{% url 'questions:change_password' %}" class="btn btn-default pull-right" ><i class="glyphicon glyphicon-lock"  ></i> Change password </a>
+                     <a href="{% url 'questions:change_email' %}" class="btn btn-default pull-right" ><i class="glyphicon glyphicon-envelope"  ></i> Change email </a>
+                    </div>
+              </div>
+            </div>
+          </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12 text-left">
+<a href="{% url 'questions:delete_user' %}"><i class="glyphicon glyphicon-trash"  ></i> Delete profile? </a>
+</div>
 
 
-    <li> {{ user.first_name }} {{ user.last_name }} </li>
-     <li> Username: {{ user.username }}</li>
-    <li>E-mail: {{ user.email }}</li>
+
 
 
 
