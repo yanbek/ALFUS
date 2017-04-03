@@ -11,6 +11,8 @@ urlpatterns = [
     url(r"^logout/", p_views.logout_view, name='logout'),
     url(r"^search/$", views.search, name='search'),
     url(r"^profile/$", views.profile, name='profile'),
-
+    url(r'^change_password', views.change_password, name='change_password'),
+    url(r'^change_email/$', views.change_email, name='change_email'),
+    url(r'^delete_user/$', views.del_user,name='delete_user')
 
 ]
