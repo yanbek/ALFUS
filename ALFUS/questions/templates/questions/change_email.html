@@ -1,0 +1,31 @@
+{% extends "questions/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<head>
+
+    <h3> Change your email</h3>
+    <br>
+<style>
+form {
+    margin: auto;
+    width: 20em;
+}
+</style>
+</head>
+
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group centered"  style="width: 300px;">
+        {{ form.email }}
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+    <br>
+</div>
+
+<h6> You will redirected to profile page after changing the email</h6>
+
+
+{% endblock %}
