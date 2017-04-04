@@ -33,12 +33,9 @@ def del_user(request):
     try:
         u = request.user
         u.delete()
-        messages.success(request, "The user is deleted")
         return redirect('/questions/profile')
 
     except request.user.DoesNotExist:
-        messages.error(request, "User does not exist")
-        print("finner ikke user")
         return render(request, 'questions/not_deleted.html')
 
     except Exception as e:
