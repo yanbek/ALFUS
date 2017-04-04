@@ -8,7 +8,6 @@ from django.db.models import signals
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
-    test_attempt = models.IntegerField(default=1)
 
     def __str__(self):
           return "%s's profile" % self.user
@@ -73,6 +72,7 @@ class hasAnswered(models.Model):
 # A table for the relationship between user and chapter
 class hasChapter(models.Model):
     skill_rating_chapter = models.FloatField(default=0.5)
+    chapter_attempt = models.IntegerField(default=1)
     user = models.ForeignKey(User)
     chapter = models.ForeignKey(Chapter)
 

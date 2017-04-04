@@ -1,4 +1,3 @@
-
 from django.utils import timezone
 from django.shortcuts import get_object_or_404, render, redirect, render_to_response
 from django.http import Http404
@@ -13,8 +12,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from .forms import ChangeEmailForm
 from django.db.models import Q, F
-
-
+from django.db.models import Q, F
 
 @login_required(login_url="/login/")
 def change_email(request):
@@ -76,10 +74,12 @@ def search(request):
     except KeyError:
         return render_to_response('questions/search.html')
 
+
 @login_required(login_url="/login/")
 def index(request):
     subject_list = Subject.objects.all()
     return render(request, 'questions/index.html', {'subject_list': subject_list})
+
 
 @login_required(login_url="/login/")
 def index_questions(request, subject_id):
@@ -90,7 +90,8 @@ def index_questions(request, subject_id):
     for question in question_list:
         question_dict[question.chapter_id].append((question.id, question.difficulty))
     request.session['question_dict'] = question_dict
-    return render(request, 'questions/index_questions.html', {'question_list': question_list, 'subject_id': subject_id, 'subject_name':subject_name})
+    return render(request, 'questions/index_questions.html',
+                  {'question_list': question_list, 'subject_id': subject_id, 'subject_name': subject_name})
 
 
 @login_required(login_url="/login/")
@@ -105,7 +106,8 @@ def detail(request, question_id, subject_id):
             haschapter = hasChapter.objects.get(user=request.user, chapter=question.chapter_id)
     except Question.DoesNotExist:
         raise Http404("Question doesn't exist")
-    return render(request, 'questions/detail.html', {'question': question, 'haschapter': haschapter, 'subject_id': subject_id})
+    return render(request, 'questions/detail.html',
+                  {'question': question, 'haschapter': haschapter, 'subject_id': subject_id})
 
 
 @login_required(login_url="/login/")
@@ -118,9 +120,10 @@ def answer(request, question_id, subject_id):
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
         isCorrect = selected_choice.correct
         # If already answered this question, create new answer with increased counter
-        new_answer = hasAnswered(wasCorrect = isCorrect, submitted_by=request.user, submitted_answer=question)
+        new_answer = hasAnswered(wasCorrect=isCorrect, submitted_by=request.user, submitted_answer=question)
         if hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).exists():
-            old_answer = hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).latest('answer_attempt')
+            old_answer = hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).latest(
+                'answer_attempt')
             new_answer.answer_attempt = old_answer.answer_attempt + 1
         new_answer.save()
 
@@ -140,17 +143,21 @@ def answer(request, question_id, subject_id):
         updated_skill_rating = float(correct_answers) / float(total_answers)
         '''
 
-
         weight = 0.4
         if isCorrect:
-            adjustment = question.difficulty-user_hasChapter_current.skill_rating_chapter+1
+            adjustment = question.difficulty - user_hasChapter_current.skill_rating_chapter + 1
 
         else:
-            adjustment = question.difficulty-user_hasChapter_current.skill_rating_chapter-1
-
+            adjustment = question.difficulty - user_hasChapter_current.skill_rating_chapter - 1
         # Adjusting with logistic function (squashing function)
-        inverse_log_fun_current_rating = -math.log(1/user_hasChapter_current.skill_rating_chapter - 1)
-        new_rating = 1/(1+math.exp(-(adjustment*weight+inverse_log_fun_current_rating)))
+        inverse_log_fun_current_rating = -math.log(1 / user_hasChapter_current.skill_rating_chapter - 1)
+
+        if inverse_log_fun_current_rating < -2.5:
+            inverse_log_fun_current_rating = -2.5
+        elif inverse_log_fun_current_rating > 2.5:
+            inverse_log_fun_current_rating = 2.5
+
+        new_rating = 1 / (1 + math.exp(-(adjustment * weight + inverse_log_fun_current_rating)))
 
         user_hasChapter_current.skill_rating_chapter = new_rating
         user_hasChapter_current.save()
@@ -159,46 +166,65 @@ def answer(request, question_id, subject_id):
         # Prioritize chapters with lower skill rating.
         # The question that gives the lowest delta is the winner.
 
-        next_question_id = None
-        chapter_priority_constant = 1
-        delta = 1.0
-        for chapter in question_dict:
-            # Check if the hasChapter relationship exists. If not exists, create one with default skill rating 0.5
-            if not hasChapter.objects.filter(user=request.user, chapter=chapter).exists():
-                user_hasChapter = hasChapter(user=request.user, chapter=Chapter.objects.get(pk=chapter))
-                user_hasChapter.save()
-            # Get chapter skill rating
-            skill_rating_chapter = hasChapter.objects.values_list('skill_rating_chapter', flat=True).get(
-                user=request.user, chapter=chapter)
+        chapter_priority = 1
+        boundary_reset_chapter = 0.5
+        search_new_question = True
+        search_new_question_attempt = 0
+        while search_new_question_attempt < 2:
+            delta = 1.0
+            next_question_id = None
+            next_question_difficulty = None
+            next_chapter_difficulty = None
+            for chapter in question_dict:
+                # Check if the hasChapter relationship exists. If not exists, create one with default skill rating 0.5
+                if not hasChapter.objects.filter(user=request.user, chapter=chapter).exists():
+                    user_hasChapter = hasChapter(user=request.user, chapter=Chapter.objects.get(pk=chapter))
+                    user_hasChapter.save()
+                    # Get chapter skill rating
+                skill_rating_chapter = hasChapter.objects.values_list('skill_rating_chapter', flat=True).get(
+                    user=request.user, chapter=chapter)
             # Iterate over the chapter list and see if there is any unanswered question that gives us a lower delta.
+            haschapter = hasChapter.objects.get(user=request.user, chapter=chapter)
             for question_to_be_checked in question_dict[chapter]:
 
                 new_delta = math.fabs(question_to_be_checked[1] - skill_rating_chapter) * (
-                    skill_rating_chapter * chapter_priority_constant)
+                    skill_rating_chapter * chapter_priority)
 
-                if (not hasAnswered.objects.filter(submitted_by=request.user,
-                                                   submitted_answer=question_to_be_checked[
-                                                       0], answer_attempt=request.user.profile.test_attempt).exists()) and new_delta < delta:
+                if (not hasAnswered.objects.filter((Q(submitted_by=request.user) &
+                                                    Q(submitted_answer=question_to_be_checked[
+                                                        0])) &
+                                                       (Q(answer_attempt=haschapter.chapter_attempt) | Q(wasCorrect=True))).exists()) and new_delta < delta:
                     delta = new_delta
                     next_question_id = question_to_be_checked[0]
-
-        if next_question_id is None:
-            # User has answered every question. Increment user test attempt counter (reset test).
-            request.user.profile.test_attempt += 1
-            request.user.profile.save()
-            return redirect('index')
+                    next_question_difficulty = question_to_be_checked[1]
+                    next_chapter_difficulty = skill_rating_chapter
+                    next_haschapter = haschapter
+            if next_question_id is None:
+                # User has answered every question.
+                all_haschapters = hasChapter.objects.filter(user=request.user)
+                all_haschapters.update(chapter_attempt=F('chapter_attempt')+1)
+                # Reset wasCorrect ....
+                subject_list = Subject.objects.all()
+                return render(request, 'questions/index.html', {'subject_list': subject_list})
+            # Reset chapter questions if the users' skill rating is too low for the remaining questions (e.g failed on all the easy questions and only the hard questions remains in the question pool).
+            if abs(next_question_difficulty - next_chapter_difficulty) > boundary_reset_chapter and search_new_question_attempt<1:
+                #print(next_question_difficulty)
+                #print(next_chapter_difficulty)
+                next_haschapter.chapter_attempt += 1
+                next_haschapter.save()
+                search_new_question_attempt += 1
+            else:
+                break
 
     except (KeyError, Choice.DoesNotExist):  # Redisplay the question voting form.
 
         haschapter = hasChapter.objects.get(user=request.user, chapter=Chapter.objects.get(pk=question.chapter_id))
 
-
-        return render(request, 'questions/detail.html',  {
+        return render(request, 'questions/detail.html', {
             'question': question, 'subject_id': subject_id,
-            'error_message': "You didn't select a choice.", 'haschapter' : haschapter
+            'error_message': "You didn't select a choice.", 'haschapter': haschapter
         })
     else:
         return render(request, 'questions/results.html',
                       {'question': question, 'is_correct': selected_choice.is_correct,
                        'next_question': next_question_id, 'subject_id': subject_id})
-
