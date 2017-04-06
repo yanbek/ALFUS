@@ -8,7 +8,59 @@ from django.utils import timezone
 import math
 from random import randint
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
+from .forms import ChangeEmailForm
 from django.db.models import Q, F
+from django.db.models import Q, F
+
+@login_required(login_url="/login/")
+def change_email(request):
+    if request.method == 'POST':
+        form = ChangeEmailForm(request.POST,instance=request.user)
+
+        if form.is_valid():
+            form.save()
+            return redirect('/questions/profile')
+    else:
+        form = ChangeEmailForm(instance=request.user)
+        args = {'form': form}
+        return render(request, 'questions/change_email.html', args)
+
+
+@login_required(login_url="/login/")
+def del_user(request):
+    try:
+        u = request.user
+        u.delete()
+        return redirect('/questions/profile')
+
+    except request.user.DoesNotExist:
+        return render(request, 'questions/not_deleted.html')
+
+    except Exception as e:
+        return render(request, 'questions/not_deleted.html')
+
+
+
+@login_required(login_url="/login/")
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(data=request.POST, user=request.user)
+
+        if form.is_valid():
+            form.save()
+            update_session_auth_hash(request,form.user)
+            return redirect('/questions/profile')
+    else:
+        form = PasswordChangeForm(user=request.user)
+        args = {'form': form}
+        return render(request, 'questions/change_password.html', args)
+
+
+@login_required(login_url="/login/")
+def profile(request):
+    return render(request, 'questions/profile.html')
 
 @login_required(login_url="/login/")
 def search(request):

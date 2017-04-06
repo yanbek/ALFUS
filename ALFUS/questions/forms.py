@@ -1,4 +1,7 @@
 from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserChangeForm
+from django.forms import TextInput
 
 
 class AnswerForm(forms.Form):
@@ -9,5 +12,19 @@ class AnswerForm(forms.Form):
         # self.num_of_questions = num_of_questions
         self.question = question
         self.answer = answer
+        
+class ChangeEmailForm(UserChangeForm):
 
-        # def check_answer(self):
+    def __init__(self, *args, **kwargs):
+        super(UserChangeForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = User
+        fields = {
+            'email',
+            'password'
+        }
+        widgets = {
+            'email': TextInput(attrs={'class': 'form-control'}),
+        }
+
