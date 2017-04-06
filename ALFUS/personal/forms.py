@@ -4,13 +4,14 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(label="User name", max_length=64, widget=forms.TextInput(
+    username = forms.CharField(label="Username", max_length=64, widget=forms.TextInput(
         attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
 
 class UserRegisterForm(forms.ModelForm):
-    username = forms.CharField(label="Choose your username")
+    username = forms.CharField(label="Choose your username", max_length=64, widget=forms.TextInput(
+        attrs={'class': 'form-control'}))
     email = forms.EmailField(label="Email address")
     password1 = forms.CharField(min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Create a password")
     password2 = forms.CharField(min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Confirm your password")
