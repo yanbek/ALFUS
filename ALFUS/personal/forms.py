@@ -4,31 +4,29 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(label="User name", max_length=64, widget=forms.TextInput(
+    username = forms.CharField(label="Username", max_length=64, widget=forms.TextInput(
         attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
 
 
 class UserRegisterForm(forms.ModelForm):
+    username = forms.CharField(label="Choose your username", max_length=64, widget=forms.TextInput(
+        attrs={'class': 'form-control'}))
     email = forms.EmailField(label="Email address")
-    email2 = forms.EmailField(label="Confirm email address")
-    password = forms.CharField(min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+    password1 = forms.CharField(min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Create a password")
+    password2 = forms.CharField(min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Confirm your password")
     class Meta:
         model = User
-        fields = ["username", "first_name","last_name", "email", "email2", "password"]
+        fields = ["username", "email", "password1", "password2"]
 
+    def clean(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
 
-    def clean_email2(self):
-        email = self.cleaned_data.get("email")
-        email2 = self.cleaned_data.get("email2")
-        if email != email2:
-            raise forms.ValidationError("Email addresses must match")
+        if password1 and password1 != password2:
+            raise forms.ValidationError("Passwords don't match")
 
-        email_qs = User.objects.filter(email=email)
-        if email_qs.exists():
-            raise forms.ValidationError("This email address has already been registered.")
-        return email
-
+        return self.cleaned_data
 
 User = get_user_model()
 
