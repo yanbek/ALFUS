@@ -116,13 +116,15 @@ def answer(request, question_id, subject_id):
         # Save answer
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
         isCorrect = selected_choice.correct
-        # If already answered this question, create new answer with increased counter
-        new_answer = hasAnswered(wasCorrect=isCorrect, submitted_by=request.user, submitted_answer=question)
-        if hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).exists():
-            old_answer = hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).latest(
-                'answer_attempt')
-            new_answer.answer_attempt = old_answer.answer_attempt + 1
-        new_answer.save()
+        # If already answered this question, modify old answer, else create new
+        if not hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).exists():
+            answer = hasAnswered(wasCorrect=isCorrect, submitted_by=request.user, submitted_answer=question)
+        else:
+            answer = hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).latest(
+            'answer_attempt')
+            answer.answer_attempt = answer.answer_attempt + 1
+            answer.wasCorrect = isCorrect
+        answer.save()
 
         user_hasChapter_current = hasChapter.objects.get(user=request.user, chapter=question.chapter_id)
 
@@ -165,7 +167,6 @@ def answer(request, question_id, subject_id):
 
         chapter_priority = 1
         boundary_reset_chapter = 0.5
-        search_new_question = True
         search_new_question_attempt = 0
         while search_new_question_attempt < 2:
             delta = 1.0
@@ -180,31 +181,33 @@ def answer(request, question_id, subject_id):
                     # Get chapter skill rating
                 skill_rating_chapter = hasChapter.objects.values_list('skill_rating_chapter', flat=True).get(
                     user=request.user, chapter=chapter)
-            # Iterate over the chapter list and see if there is any unanswered question that gives us a lower delta.
-            haschapter = hasChapter.objects.get(user=request.user, chapter=chapter)
-            for question_to_be_checked in question_dict[chapter]:
-
-                new_delta = math.fabs(question_to_be_checked[1] - skill_rating_chapter) * (
-                    skill_rating_chapter * chapter_priority)
-
-                if (not hasAnswered.objects.filter((Q(submitted_by=request.user) &
-                                                    Q(submitted_answer=question_to_be_checked[
-                                                        0])) &
-                                                       (Q(answer_attempt=haschapter.chapter_attempt) | Q(wasCorrect=True))).exists()) and new_delta < delta:
-                    delta = new_delta
-                    next_question_id = question_to_be_checked[0]
-                    next_question_difficulty = question_to_be_checked[1]
-                    next_chapter_difficulty = skill_rating_chapter
-                    next_haschapter = haschapter
+                # Iterate over the chapter list and see if there is any unanswered question that gives us a lower delta.
+                haschapter = hasChapter.objects.get(user=request.user, chapter=chapter)
+                for question_to_be_checked in question_dict[chapter]:
+                    new_delta = math.fabs(question_to_be_checked[1] - skill_rating_chapter) * (
+                        skill_rating_chapter * chapter_priority)
+                    if (not hasAnswered.objects.filter((Q(submitted_by=request.user) &
+                                                        Q(submitted_answer=question_to_be_checked[
+                                                            0])) &
+                                                           (Q(answer_attempt=haschapter.chapter_attempt) | Q(wasCorrect=True))).exists()) and new_delta < delta:
+                        delta = new_delta
+                        next_question_id = question_to_be_checked[0]
+                        next_question_difficulty = question_to_be_checked[1]
+                        next_chapter_difficulty = skill_rating_chapter
+                        next_haschapter = haschapter
+                        print(next_haschapter.chapter)
+                        print(delta)
             if next_question_id is None:
-                # User has answered every question.
-                all_haschapters = hasChapter.objects.filter(user=request.user)
-                all_haschapters.update(chapter_attempt=F('chapter_attempt')+1)
-                # Reset wasCorrect ....
-                subject_list = Subject.objects.all()
-                return render(request, 'questions/index.html', {'subject_list': subject_list})
+
+                if(not hasAnswered.objects.filter(Q(submitted_by=request.user) & Q(wasCorrect=False)).exists()):
+                    subject_list = Subject.objects.all()
+                    return render(request, 'questions/index.html', {'subject_list': subject_list})
+                else:
+                    all_haschapters = hasChapter.objects.filter(user=request.user)
+                    all_haschapters.update(chapter_attempt=F('chapter_attempt')+1)
+
             # Reset chapter questions if the users' skill rating is too low for the remaining questions (e.g failed on all the easy questions and only the hard questions remains in the question pool).
-            if abs(next_question_difficulty - next_chapter_difficulty) > boundary_reset_chapter and search_new_question_attempt<1:
+            elif abs(next_question_difficulty - next_chapter_difficulty) > boundary_reset_chapter and search_new_question_attempt<1:
                 #print(next_question_difficulty)
                 #print(next_chapter_difficulty)
                 next_haschapter.chapter_attempt += 1
