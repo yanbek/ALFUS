@@ -118,7 +118,7 @@ def answer(request, question_id, subject_id):
         isCorrect = selected_choice.correct
         # If already answered this question, modify old answer, else create new
         if not hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).exists():
-            answer = hasAnswered(wasCorrect=isCorrect, submitted_by=request.user, submitted_answer=question)
+            answer = hasAnswered(firstWasCorrect=isCorrect, wasCorrect=isCorrect, submitted_by=request.user, submitted_answer=question)
         else:
             answer = hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).latest(
             'answer_attempt')
@@ -195,11 +195,16 @@ def answer(request, question_id, subject_id):
                         next_question_difficulty = question_to_be_checked[1]
                         next_chapter_difficulty = skill_rating_chapter
                         next_haschapter = haschapter
-                        print(next_haschapter.chapter)
-                        print(delta)
             if next_question_id is None:
 
                 if(not hasAnswered.objects.filter(Q(submitted_by=request.user) & Q(wasCorrect=False)).exists()):
+                    ''' Code for resetting questions 
+                    all_hasAnswer = hasAnswered.objects.filter(submitted_by=request.user,
+                                                                           submitted_answer__chapter__part_of__name="Math")
+
+                    #all_hasAnswer.update(wasCorrect=False)
+                    '''
+
                     subject_list = Subject.objects.all()
                     return render(request, 'questions/index.html', {'subject_list': subject_list})
                 else:
@@ -208,8 +213,6 @@ def answer(request, question_id, subject_id):
 
             # Reset chapter questions if the users' skill rating is too low for the remaining questions (e.g failed on all the easy questions and only the hard questions remains in the question pool).
             elif abs(next_question_difficulty - next_chapter_difficulty) > boundary_reset_chapter and search_new_question_attempt<1:
-                #print(next_question_difficulty)
-                #print(next_chapter_difficulty)
                 next_haschapter.chapter_attempt += 1
                 next_haschapter.save()
                 search_new_question_attempt += 1

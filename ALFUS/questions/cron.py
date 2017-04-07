@@ -17,7 +17,7 @@ class Difficulty_adjustment(CronJobBase):
         try:
             prior_answers = hasAnswered.objects.all()
             for prior_answer in prior_answers:
-                question_dict[prior_answer.submitted_answer_id].append(prior_answer.wasCorrect)
+                question_dict[prior_answer.submitted_answer_id].append(prior_answer.firstWasCorrect)
             for question_id in question_dict:
                 total_answers = len(question_dict[question_id])
                 correct_answers = sum(question_dict[question_id])
