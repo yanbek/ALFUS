@@ -198,7 +198,7 @@ def answer(request, question_id, subject_id):
             if next_question_id is None:
 
                 if(not hasAnswered.objects.filter(Q(submitted_by=request.user) & Q(wasCorrect=False)).exists()):
-                    ''' Code for resetting questions 
+                    ''' Code for resetting answers 
                     all_hasAnswer = hasAnswered.objects.filter(submitted_by=request.user,
                                                                            submitted_answer__chapter__part_of__name="Math")
 
