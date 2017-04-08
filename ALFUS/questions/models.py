@@ -61,6 +61,18 @@ class Choice(models.Model):
 
     def __str__(self):
         return self.choice_text
+    
+class Urls(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    help_links = models.URLField(max_length=400)
+    description = models.CharField(max_length=200, default="x")
+
+    def __str__(self):
+        return self.help_links
+
+    def desc(self):
+        return self.description
+
 
 # A table for the relationship between user and question
 class hasAnswered(models.Model):
