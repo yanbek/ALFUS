@@ -26,7 +26,13 @@
             <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br/>
         {% endfor %}
         <button type="submit" class="btn btn-default">Submit</button>
-
-
     </form>
+
+    <br> 
+    <br>
+    <h5> If you need some more help about this specific topic, there is some great links here: </h5>
+    {% for url in question.urls_set.all %}
+        <a href="{{ url.help_links }}"> {{ url.desc }} </a>
+        {% endfor %}
+
 {% endblock %}
