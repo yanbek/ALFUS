@@ -77,6 +77,7 @@ class Urls(models.Model):
 # A table for the relationship between user and question
 class hasAnswered(models.Model):
     wasCorrect = models.BooleanField()
+    firstWasCorrect = models.BooleanField()
     answer_attempt = models.IntegerField(default=1)
     submitted_by = models.ForeignKey(User)
     submitted_answer = models.ForeignKey(Question)
