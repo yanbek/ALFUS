@@ -9,7 +9,9 @@
     ================================================== -->
     <div class="container">
         <h1>Chapter: {{ haschapter.chapter }}</h1>
-        <h3>Current skill level ({{ haschapter.chapter }}): {{haschapter}}</h3>
+        <h3>Current skill level ({{ haschapter.chapter }}): {{haschapter}}<br />
+            <progress value={{haschapter}} max="1"></progress>
+        </h3>
     </div>
     <!--
     ================================================== -->
