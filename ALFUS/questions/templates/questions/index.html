@@ -8,10 +8,10 @@
         {% if subject_list %}
      <!-- Inside index.html -->
         <ul class="list-group">
-            {% for subject in subject_list %}
+            {% for subject, subject_answered, count in subject_list %}
         <li class="list-group-item">
             <a href="{% url 'questions:index_questions' subject.id %}">{{ subject }}</a>
-             &emsp;  Status
+             &emsp;  {{subject_answered}}/{{count}}
             {% endfor %}
         </ul>
         {% else %}
