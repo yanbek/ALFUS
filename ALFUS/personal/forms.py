@@ -15,9 +15,14 @@ class UserRegisterForm(forms.ModelForm):
     email = forms.EmailField(label="Email address")
     password1 = forms.CharField(min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Create a password")
     password2 = forms.CharField(min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control'}), label="Confirm your password")
+    first_name = forms.CharField(label="First name", max_length=64, widget=forms.TextInput(
+        attrs={'class': 'form-control'}))
+    last_name = forms.CharField(label="Last name", max_length=64, widget=forms.TextInput(
+        attrs={'class': 'form-control'}))
+
     class Meta:
         model = User
-        fields = ["username", "email", "password1", "password2"]
+        fields = ["username", "first_name", "last_name", "email", "password1", "password2"]
 
     def clean(self):
         password1 = self.cleaned_data.get('password1')
@@ -25,6 +30,9 @@ class UserRegisterForm(forms.ModelForm):
 
         if password1 and password1 != password2:
             raise forms.ValidationError("Passwords don't match")
+
+        if User.objects.filter(username=self.cleaned_data['username']).exists():
+            raise forms.ValidationError("The username is already taken.")
 
         return self.cleaned_data
 
