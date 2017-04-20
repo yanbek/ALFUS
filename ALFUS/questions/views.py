@@ -12,10 +12,9 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm
 from .forms import ChangeEmailForm
 from django.db.models import Q, F
-from django.db.models import Q, F
 from itertools import chain
 from django.contrib import messages
-from django.contrib.auth.forms import PasswordChangeForm
+
 
 @login_required(login_url="/login/")
 def change_email(request):
@@ -25,6 +24,9 @@ def change_email(request):
         if form.is_valid():
             form.save()
             return redirect('/questions/profile')
+        else:
+            messages.error(request, "Please correct the error above.")
+            return redirect('/questions/change_email')
     else:
         form = ChangeEmailForm(instance=request.user)
         args = {'form': form}
