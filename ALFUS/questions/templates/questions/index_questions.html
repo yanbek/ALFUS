@@ -13,7 +13,7 @@
         <ul class="list-group">
             {% for subject, percent in chapters %}
         <li class="list-group-item">
-            {{ subject }}: <progress value={{percent}} max="1"></progress> {{percent}}%
+            {{ subject }}: <progress value={{percent}} max="1"></progress>
             {% endfor %}
         </ul>
         {% else %}
