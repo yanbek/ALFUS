@@ -14,6 +14,8 @@ from .forms import ChangeEmailForm
 from django.db.models import Q, F
 from django.db.models import Q, F
 from itertools import chain
+from django.contrib import messages
+from django.contrib.auth.forms import PasswordChangeForm
 
 @login_required(login_url="/login/")
 def change_email(request):
@@ -47,16 +49,18 @@ def del_user(request):
 @login_required(login_url="/login/")
 def change_password(request):
     if request.method == 'POST':
-        form = PasswordChangeForm(data=request.POST, user=request.user)
+        form = PasswordChangeForm(request.user, request.POST)
 
         if form.is_valid():
-            form.save()
-            update_session_auth_hash(request, form.user)
-            return HttpResponseRedirect('/questions/profile')
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, "Your password was successfully updated!")
+            return redirect('/questions/profile')
+        else:
+            messages.error(request, "Please correct the error below.")
     else:
-        form = PasswordChangeForm(user=request.user)
-        args = {'form': form}
-        return render(request, 'questions/change_password.html', args)
+        form = PasswordChangeForm(request.user)
+    return render(request, 'questions/change_password.html', {"form": form})
 
 
 @login_required(login_url="/login/")
