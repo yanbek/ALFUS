@@ -80,7 +80,7 @@ def index(request):
     questions_in_subject = {}
     questions_in_subject_answered = {}
     current_user = request.user
-    questions_by_user = hasAnswered.objects.all().filter(submitted_by=current_user)
+    questions_by_user = hasAnswered.objects.all().filter(submitted_by=current_user, wasCorrect=True)
 
     for i in Chapter.objects.all():
         questions_chapter_answered[i] = 0
@@ -105,8 +105,6 @@ def index(request):
     subject = []
     subject_answered = []
     count = []
-    print(questions_in_subject)
-    print(questions_in_subject_answered)
     for q in questions_in_subject.keys():
         subject.append(q)
         subject_answered.append(questions_in_subject_answered[q])
@@ -122,17 +120,15 @@ def index_questions(request, subject_id):
     questions_chapter_answered = {}
     questions_in_subject = {}
     questions_in_subject_answered = {}
-    all_questions = Question.objects.all()
     current_user = request.user
-    questions_by_user = hasAnswered.objects.filter(submitted_by=current_user, submitted_answer=all_questions)
+    questions_by_user = hasAnswered.objects.all().filter(submitted_by=current_user, wasCorrect=True)
 
     for i in Chapter.objects.all():
         questions_chapter_answered[i] = 0
         questions = Question.objects.filter(chapter=i)
-        result_list = list(chain(questions_by_user, questions))
-        questions_chapter[i] = len(result_list) - 1
+        questions_chapter[i] = len(questions)
 
-        for s in list(chain(questions_by_user)):
+        for s in list(questions_by_user):
             if s.submitted_answer.chapter == i:
                 questions_chapter_answered[i] += 1
 
@@ -149,15 +145,12 @@ def index_questions(request, subject_id):
     print(questions_in_subject)
     print(questions_in_subject_answered)
     chapter = []
-    subject_answered = []
-    count = []
+    percent = []
 
     for q in questions_in_subject.keys():
         chapter.append(q)
-        subject_answered.append(questions_in_subject_answered[q])
-        count.append(questions_in_subject[q])
-
-
+        percent.append(questions_in_subject_answered[q]/questions_in_subject[q])
+    zipped = zip(chapter, percent)
 
 
 
@@ -171,7 +164,7 @@ def index_questions(request, subject_id):
         question_dict[question.chapter_id].append((question.id, question.difficulty))
     request.session['question_dict'] = question_dict
     return render(request, 'questions/index_questions.html',
-                  {'question_list': question_list, 'subject_id': subject_id, 'subject_name': subject_name})
+                  {'question_list': question_list, 'subject_id': subject_id, 'subject_name': subject_name, "chapters": zipped})
 
 
 @login_required(login_url="/login/")
@@ -292,7 +285,7 @@ def answer(request, question_id, subject_id):
                     questions_in_subject = {}
                     questions_in_subject_answered = {}
                     current_user = request.user
-                    questions_by_user = hasAnswered.objects.all().filter(submitted_by=current_user)
+                    questions_by_user = hasAnswered.objects.all().filter(submitted_by=current_user, wasCorrect=True)
 
                     for i in Chapter.objects.all():
                         questions_chapter_answered[i] = 0
@@ -317,8 +310,6 @@ def answer(request, question_id, subject_id):
                     subject = []
                     subject_answered = []
                     count = []
-                    print(questions_in_subject)
-                    print(questions_in_subject_answered)
                     for q in questions_in_subject.keys():
                         subject.append(q)
                         subject_answered.append(questions_in_subject_answered[q])
