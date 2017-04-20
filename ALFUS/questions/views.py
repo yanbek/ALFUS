@@ -79,6 +79,49 @@ def index(request):
     questions_chapter_answered = {}
     questions_in_subject = {}
     questions_in_subject_answered = {}
+    current_user = request.user
+    questions_by_user = hasAnswered.objects.all().filter(submitted_by=current_user)
+
+    for i in Chapter.objects.all():
+        questions_chapter_answered[i] = 0
+        questions = Question.objects.filter(chapter=i)
+        questions_chapter[i] = len(questions)
+
+        for s in list(questions_by_user):
+            if s.submitted_answer.chapter == i:
+                questions_chapter_answered[i] += 1
+
+    for t in Subject.objects.all():
+        questions_in_subject[t] = 0
+        questions_in_subject_answered[t] = 0
+        for chapter in questions_chapter.keys():
+            if chapter.part_of == t:
+                questions_in_subject[t] += questions_chapter[chapter]
+
+        for chapter in questions_chapter_answered.keys():
+            if chapter.part_of == t:
+                questions_in_subject_answered[t] += questions_chapter_answered[chapter]
+
+    subject = []
+    subject_answered = []
+    count = []
+    print(questions_in_subject)
+    print(questions_in_subject_answered)
+    for q in questions_in_subject.keys():
+        subject.append(q)
+        subject_answered.append(questions_in_subject_answered[q])
+        count.append(questions_in_subject[q])
+
+    zipped = zip(subject, subject_answered, count)
+    return render(request, 'questions/index.html', {'subject_list': zipped})
+
+
+@login_required(login_url="/login/")
+def index_questions(request, subject_id):
+    questions_chapter = {}
+    questions_chapter_answered = {}
+    questions_in_subject = {}
+    questions_in_subject_answered = {}
     all_questions = Question.objects.all()
     current_user = request.user
     questions_by_user = hasAnswered.objects.filter(submitted_by=current_user, submitted_answer=all_questions)
@@ -93,32 +136,33 @@ def index(request):
             if s.submitted_answer.chapter == i:
                 questions_chapter_answered[i] += 1
 
-    for t in Subject.objects.all():
-        questions_in_subject[t] = 0
-        questions_in_subject_answered[t] = 0
+        subject = Subject.objects.get(pk=subject_id)
+
         for chapter in questions_chapter.keys():
-            if chapter.part_of == t:
-                questions_in_subject[t] += 1
+            if chapter.part_of == subject:
+                questions_in_subject[chapter] = questions_chapter[chapter]
 
         for chapter in questions_chapter_answered.keys():
-            if chapter.part_of == t:
-                questions_in_subject_answered[t] += questions_chapter_answered[chapter]
+            if chapter.part_of == subject:
+                questions_in_subject_answered[chapter] = questions_chapter_answered[chapter]
 
-    subject = []
+    print(questions_in_subject)
+    print(questions_in_subject_answered)
+    chapter = []
     subject_answered = []
     count = []
 
     for q in questions_in_subject.keys():
-        subject.append(q)
+        chapter.append(q)
         subject_answered.append(questions_in_subject_answered[q])
         count.append(questions_in_subject[q])
 
-    zipped = zip(subject, subject_answered, count)
-    return render(request, 'questions/index.html', {'subject_list': zipped})
 
 
-@login_required(login_url="/login/")
-def index_questions(request, subject_id):
+
+
+
+
     question_list = Question.objects.filter(chapter__part_of_id=subject_id)
     subject_name = Subject.objects.get(pk=subject_id)
 
@@ -247,18 +291,15 @@ def answer(request, question_id, subject_id):
                     questions_chapter_answered = {}
                     questions_in_subject = {}
                     questions_in_subject_answered = {}
-                    all_questions = Question.objects.all()
                     current_user = request.user
-                    questions_by_user = hasAnswered.objects.filter(submitted_by=current_user,
-                                                                   submitted_answer=all_questions)
+                    questions_by_user = hasAnswered.objects.all().filter(submitted_by=current_user)
 
                     for i in Chapter.objects.all():
                         questions_chapter_answered[i] = 0
                         questions = Question.objects.filter(chapter=i)
-                        result_list = list(chain(questions_by_user, questions))
-                        questions_chapter[i] = len(result_list) - 1
+                        questions_chapter[i] = len(questions)
 
-                        for s in list(chain(questions_by_user)):
+                        for s in list(questions_by_user):
                             if s.submitted_answer.chapter == i:
                                 questions_chapter_answered[i] += 1
 
@@ -267,7 +308,7 @@ def answer(request, question_id, subject_id):
                         questions_in_subject_answered[t] = 0
                         for chapter in questions_chapter.keys():
                             if chapter.part_of == t:
-                                questions_in_subject[t] += 1
+                                questions_in_subject[t] += questions_chapter[chapter]
 
                         for chapter in questions_chapter_answered.keys():
                             if chapter.part_of == t:
@@ -276,7 +317,8 @@ def answer(request, question_id, subject_id):
                     subject = []
                     subject_answered = []
                     count = []
-
+                    print(questions_in_subject)
+                    print(questions_in_subject_answered)
                     for q in questions_in_subject.keys():
                         subject.append(q)
                         subject_answered.append(questions_in_subject_answered[q])
