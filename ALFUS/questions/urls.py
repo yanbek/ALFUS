@@ -13,6 +13,7 @@ urlpatterns = [
     url(r"^profile/$", views.profile, name='profile'),
     url(r'^change_password', views.change_password, name='change_password'),
     url(r'^change_email/$', views.change_email, name='change_email'),
-    url(r'^delete_user/$', views.del_user,name='delete_user')
+    url(r'^delete_user/$', views.del_user,name='delete_user'),
+    url(r"^reset/$", views.reset, name='reset'),
 
 ]

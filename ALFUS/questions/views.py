@@ -19,6 +19,16 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.http import HttpResponse
 
 @login_required(login_url="/login/")
+def reset(request):
+    all_hasAnswer = hasAnswered.objects.filter(submitted_by=request.user)
+    all_hasAnswer.update(wasCorrect=False)
+
+    all_skill = hasChapter.objects.filter(user=request.user)
+    all_skill.update(skill_rating_chapter=0.5)
+    return redirect("/questions/profile")
+
+
+@login_required(login_url="/login/")
 def change_email(request):
     if request.method == 'POST':
         form = ChangeEmailForm(request.POST,instance=request.user)
@@ -66,7 +76,31 @@ def change_password(request):
 
 @login_required(login_url="/login/")
 def profile(request):
-    return render(request, 'questions/profile.html')
+    skillrating_chapters = hasChapter.objects.filter(user=request.user)
+    chapters = []
+    skill = []
+    grades = []
+    for i in list(skillrating_chapters):
+        skill_r = i.skill_rating_chapter
+        chapters.append(i.chapter.name)
+        skill.append(skill_r)
+        if skill_r >= 0.89:
+            grades.append("A")
+        elif skill_r >= 0.77:
+            grades.append("B")
+        elif skill_r >= 0.65:
+            grades.append("C")
+        elif skill_r >= 0.53:
+            grades.append("D")
+        elif skill_r >= 0.41:
+            grades.append("E")
+        else:
+            grades.append("F")
+
+    zipped_skills = zip(chapters, skill)
+    zipped_grades = zip(chapters, grades)
+
+    return render(request, 'questions/profile.html', {"skills": zipped_skills, "grades": zipped_grades})
 
 @login_required(login_url="/login/")
 def search(request):
