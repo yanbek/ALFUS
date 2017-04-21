@@ -1,5 +1,5 @@
 from django.utils import timezone
-from django.shortcuts import get_object_or_404, render, redirect, render_to_response
+from django.shortcuts import get_object_or_404, render, redirect, render_to_response, HttpResponseRedirect
 from django.http import Http404
 from .models import Choice, Question, hasAnswered, hasChapter, Chapter, Subject
 from collections import defaultdict
@@ -299,12 +299,6 @@ def get_next_question(request):
         if next_question_id is None:
 
             if (not hasAnswered.objects.filter(Q(submitted_by=request.user) & Q(wasCorrect=False)).exists()):
-                ''' Code for resetting answers 
-                all_hasAnswer = hasAnswered.objects.filter(submitted_by=request.user,
-                                                                       submitted_answer__chapter__part_of__name="Math")
-
-                #all_hasAnswer.update(wasCorrect=False)
-                '''
                 zipped = get_chapters(request)
                 return render(request, 'questions/index.html', {'subject_list': zipped})
             else:
@@ -355,3 +349,11 @@ def get_chapters(request):
         subject_answered.append(questions_in_subject_answered[q])
         count.append(questions_in_subject[q])
     return zip(subject, subject_answered, count)
+
+@login_required(login_url="/login/")
+def reset(request):
+    # Reset all questions
+    all_hasAnswer = hasAnswered.objects.filter(submitted_by=request.user)
+    all_hasAnswer.update(wasCorrect=False)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
