@@ -195,6 +195,11 @@ def detail(request, question_id, subject_id, single_question):
 def answer(request, question_id, subject_id, single_question):
     question = get_object_or_404(Question, pk=question_id)
     try:
+        if (single_question == 'S'):
+            single_question = True
+        else:
+            single_question = False
+
         # Save answer
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
         isCorrect = selected_choice.correct
@@ -203,7 +208,13 @@ def answer(request, question_id, subject_id, single_question):
             answer = hasAnswered(firstWasCorrect=isCorrect, wasCorrect=isCorrect, submitted_by=request.user, submitted_answer=question, answer_attempt = 1)
         else:
             answer = hasAnswered.objects.get(submitted_by=request.user, submitted_answer=question)
-            answer.answer_attempt = answer.answer_attempt + 1
+            haschapter = hasChapter.objects.get(user=request.user, chapter=question.chapter)
+            if(answer.answer_attempt==haschapter.chapter_attempt):
+                error_iscorrect = "error " + str(isCorrect)
+                return render(request, 'questions/results.html',
+                              {'question': question, 'subject_id': subject_id, 'single_question': single_question, 'is_correct': error_iscorrect})
+            else:
+                answer.answer_attempt = answer.answer_attempt + 1
             answer.wasCorrect = isCorrect
         answer.save()
 
@@ -253,11 +264,6 @@ def answer(request, question_id, subject_id, single_question):
             'error_message': "You didn't select an answer.", 'haschapter': haschapter
         })
     else:
-        if (single_question == 'S'):
-            single_question = True
-        else:
-            single_question = False
-
         return render(request, 'questions/results.html',
                           {'question': question, 'is_correct': selected_choice.is_correct,
                            'next_question': next_question_id, 'subject_id': subject_id, 'single_question': single_question})
