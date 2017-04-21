@@ -24,7 +24,7 @@ SECRET_KEY = '$q4ln@fmb7aki^v=e-ywb+w7-cu+iznl)n$b!00i2f-t10hht@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['139.59.185.223']
+ALLOWED_HOSTS = ['139.59.185.223', '127.0.0.1']
 
 CRON_CLASSES = [
     "questions.cron.Difficulty_adjustment",
