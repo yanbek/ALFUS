@@ -20,7 +20,7 @@
         <p>No courses are available.</p>
         {% endif %}
     </div>
-            <a href="{% url 'questions:detail' subject_id question_list.first.id %}" class="btn btn-default"
+            <a href="{% url 'questions:detail' subject_id next_question_id %}" class="btn btn-default"
                role="button">Start Test</a>
 
         </div>

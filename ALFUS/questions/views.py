@@ -16,6 +16,7 @@ from django.db.models import Q, F
 from itertools import chain
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
+from django.http import HttpResponse
 
 @login_required(login_url="/login/")
 def change_email(request):
@@ -79,42 +80,7 @@ def search(request):
 
 @login_required(login_url="/login/")
 def index(request):
-    questions_chapter = {}
-    questions_chapter_answered = {}
-    questions_in_subject = {}
-    questions_in_subject_answered = {}
-    current_user = request.user
-    questions_by_user = hasAnswered.objects.all().filter(submitted_by=current_user, wasCorrect=True)
-
-    for i in Chapter.objects.all():
-        questions_chapter_answered[i] = 0
-        questions = Question.objects.filter(chapter=i)
-        questions_chapter[i] = len(questions)
-
-        for s in list(questions_by_user):
-            if s.submitted_answer.chapter == i:
-                questions_chapter_answered[i] += 1
-
-    for t in Subject.objects.all():
-        questions_in_subject[t] = 0
-        questions_in_subject_answered[t] = 0
-        for chapter in questions_chapter.keys():
-            if chapter.part_of == t:
-                questions_in_subject[t] += questions_chapter[chapter]
-
-        for chapter in questions_chapter_answered.keys():
-            if chapter.part_of == t:
-                questions_in_subject_answered[t] += questions_chapter_answered[chapter]
-
-    subject = []
-    subject_answered = []
-    count = []
-    for q in questions_in_subject.keys():
-        subject.append(q)
-        subject_answered.append(questions_in_subject_answered[q])
-        count.append(questions_in_subject[q])
-
-    zipped = zip(subject, subject_answered, count)
+    zipped = get_chapters(request)
     return render(request, 'questions/index.html', {'subject_list': zipped})
 
 
@@ -153,12 +119,8 @@ def index_questions(request, subject_id):
 
     for q in questions_in_subject.keys():
         chapter.append(q)
-        percent.append(questions_in_subject_answered[q]/questions_in_subject[q])
+        percent.append(questions_in_subject_answered[q] / questions_in_subject[q])
     zipped = zip(chapter, percent)
-
-
-
-
 
     question_list = Question.objects.filter(chapter__part_of_id=subject_id)
     subject_name = Subject.objects.get(pk=subject_id)
@@ -167,8 +129,13 @@ def index_questions(request, subject_id):
     for question in question_list:
         question_dict[question.chapter_id].append((question.id, question.difficulty))
     request.session['question_dict'] = question_dict
-    return render(request, 'questions/index_questions.html',
-                  {'question_list': question_list, 'subject_id': subject_id, 'subject_name': subject_name, "chapters": zipped})
+
+    next_question_id = get_next_question(request)
+    if isinstance(next_question_id, HttpResponse):
+        return next_question_id
+    else:
+        return render(request, 'questions/index_questions.html',
+                    {'next_question_id': next_question_id, 'subject_id': subject_id, 'subject_name': subject_name, "chapters": zipped})
 
 
 @login_required(login_url="/login/")
@@ -189,8 +156,6 @@ def detail(request, question_id, subject_id):
 
 @login_required(login_url="/login/")
 def answer(request, question_id, subject_id):
-    question_dict = request.session['question_dict']
-
     question = get_object_or_404(Question, pk=question_id)
     try:
         # Save answer
@@ -241,97 +206,7 @@ def answer(request, question_id, subject_id):
         user_hasChapter_current.skill_rating_chapter = new_rating
         user_hasChapter_current.save()
 
-        # Get next question by selecting an unanswered question that match the current skill rating.
-        # Prioritize chapters with lower skill rating.
-        # The question that gives the lowest delta is the winner.
-
-        chapter_priority = 1
-        boundary_reset_chapter = 0.5
-        search_new_question_attempt = 0
-        while search_new_question_attempt < 2:
-            delta = 1.0
-            next_question_id = None
-            next_question_difficulty = None
-            next_chapter_difficulty = None
-            for chapter in question_dict:
-                # Check if the hasChapter relationship exists. If not exists, create one with default skill rating 0.5
-                if not hasChapter.objects.filter(user=request.user, chapter=chapter).exists():
-                    user_hasChapter = hasChapter(user=request.user, chapter=Chapter.objects.get(pk=chapter))
-                    user_hasChapter.save()
-                    # Get chapter skill rating
-                skill_rating_chapter = hasChapter.objects.values_list('skill_rating_chapter', flat=True).get(
-                    user=request.user, chapter=chapter)
-                # Iterate over the chapter list and see if there is any unanswered question that gives us a lower delta.
-                haschapter = hasChapter.objects.get(user=request.user, chapter=chapter)
-                for question_to_be_checked in question_dict[chapter]:
-                    new_delta = math.fabs(question_to_be_checked[1] - skill_rating_chapter) * (
-                        skill_rating_chapter * chapter_priority)
-                    if (not hasAnswered.objects.filter((Q(submitted_by=request.user) &
-                                                        Q(submitted_answer=question_to_be_checked[
-                                                            0])) &
-                                                           (Q(answer_attempt=haschapter.chapter_attempt) | Q(wasCorrect=True))).exists()) and new_delta < delta:
-                        delta = new_delta
-                        next_question_id = question_to_be_checked[0]
-                        next_question_difficulty = question_to_be_checked[1]
-                        next_chapter_difficulty = skill_rating_chapter
-                        next_haschapter = haschapter
-            if next_question_id is None:
-
-                if(not hasAnswered.objects.filter(Q(submitted_by=request.user) & Q(wasCorrect=False)).exists()):
-                    ''' Code for resetting answers 
-                    all_hasAnswer = hasAnswered.objects.filter(submitted_by=request.user,
-                                                                           submitted_answer__chapter__part_of__name="Math")
-
-                    #all_hasAnswer.update(wasCorrect=False)
-                    '''
-                    questions_chapter = {}
-                    questions_chapter_answered = {}
-                    questions_in_subject = {}
-                    questions_in_subject_answered = {}
-                    current_user = request.user
-                    questions_by_user = hasAnswered.objects.all().filter(submitted_by=current_user, wasCorrect=True)
-
-                    for i in Chapter.objects.all():
-                        questions_chapter_answered[i] = 0
-                        questions = Question.objects.filter(chapter=i)
-                        questions_chapter[i] = len(questions)
-
-                        for s in list(questions_by_user):
-                            if s.submitted_answer.chapter == i:
-                                questions_chapter_answered[i] += 1
-
-                    for t in Subject.objects.all():
-                        questions_in_subject[t] = 0
-                        questions_in_subject_answered[t] = 0
-                        for chapter in questions_chapter.keys():
-                            if chapter.part_of == t:
-                                questions_in_subject[t] += questions_chapter[chapter]
-
-                        for chapter in questions_chapter_answered.keys():
-                            if chapter.part_of == t:
-                                questions_in_subject_answered[t] += questions_chapter_answered[chapter]
-
-                    subject = []
-                    subject_answered = []
-                    count = []
-                    for q in questions_in_subject.keys():
-                        subject.append(q)
-                        subject_answered.append(questions_in_subject_answered[q])
-                        count.append(questions_in_subject[q])
-
-                    zipped = zip(subject, subject_answered, count)
-                    return render(request, 'questions/index.html', {'subject_list': zipped})
-                else:
-                    all_haschapters = hasChapter.objects.filter(user=request.user)
-                    all_haschapters.update(chapter_attempt=F('chapter_attempt')+1)
-
-            # Reset chapter questions if the users' skill rating is too low for the remaining questions (e.g failed on all the easy questions and only the hard questions remains in the question pool).
-            elif abs(next_question_difficulty - next_chapter_difficulty) > boundary_reset_chapter and search_new_question_attempt<1:
-                next_haschapter.chapter_attempt += 1
-                next_haschapter.save()
-                search_new_question_attempt += 1
-            else:
-                break
+        next_question_id = get_next_question(request)
 
     except (KeyError, Choice.DoesNotExist):  # Redisplay the question voting form.
 
@@ -342,6 +217,107 @@ def answer(request, question_id, subject_id):
             'error_message': "You didn't select a choice.", 'haschapter': haschapter
         })
     else:
-        return render(request, 'questions/results.html',
-                      {'question': question, 'is_correct': selected_choice.is_correct,
-                       'next_question': next_question_id, 'subject_id': subject_id})
+
+        if isinstance(next_question_id, HttpResponse):
+            return next_question_id
+        else:
+            return render(request, 'questions/results.html',
+                          {'question': question, 'is_correct': selected_choice.is_correct,
+                           'next_question': next_question_id, 'subject_id': subject_id})
+
+@login_required(login_url="/login/")
+def get_next_question(request):
+    # Get next question by selecting an unanswered question that match the current skill rating.
+    # Prioritize chapters with lower skill rating.
+    # The question that gives the lowest delta is the winner.
+    question_dict = request.session['question_dict']
+    chapter_priority = 1
+    boundary_reset_chapter = 0.5
+    search_new_question_attempt = 0
+    while search_new_question_attempt < 2:
+        delta = 1.0
+        next_question_id = None
+        next_question_difficulty = None
+        next_chapter_difficulty = None
+        for chapter in question_dict:
+            # Check if the hasChapter relationship exists. If not exists, create one with default skill rating 0.5
+            if not hasChapter.objects.filter(user=request.user, chapter=chapter).exists():
+                user_hasChapter = hasChapter(user=request.user, chapter=Chapter.objects.get(pk=chapter))
+                user_hasChapter.save()
+                # Get chapter skill rating
+            skill_rating_chapter = hasChapter.objects.values_list('skill_rating_chapter', flat=True).get(
+                user=request.user, chapter=chapter)
+            # Iterate over the chapter list and see if there is any unanswered question that gives us a lower delta.
+            haschapter = hasChapter.objects.get(user=request.user, chapter=chapter)
+            for question_to_be_checked in question_dict[chapter]:
+                new_delta = math.fabs(question_to_be_checked[1] - skill_rating_chapter) * (
+                    skill_rating_chapter * chapter_priority)
+                if (not hasAnswered.objects.filter((Q(submitted_by=request.user) &
+                                                        Q(submitted_answer=question_to_be_checked[
+                                                            0])) &
+                                                       (Q(answer_attempt=haschapter.chapter_attempt) | Q(
+                                                           wasCorrect=True))).exists()) and new_delta < delta:
+                    delta = new_delta
+                    next_question_id = question_to_be_checked[0]
+                    next_question_difficulty = question_to_be_checked[1]
+                    next_chapter_difficulty = skill_rating_chapter
+                    next_haschapter = haschapter
+        if next_question_id is None:
+
+            if (not hasAnswered.objects.filter(Q(submitted_by=request.user) & Q(wasCorrect=False)).exists()):
+                ''' Code for resetting answers 
+                all_hasAnswer = hasAnswered.objects.filter(submitted_by=request.user,
+                                                                       submitted_answer__chapter__part_of__name="Math")
+
+                #all_hasAnswer.update(wasCorrect=False)
+                '''
+                zipped = get_chapters(request)
+                return render(request, 'questions/index.html', {'subject_list': zipped})
+            else:
+                all_haschapters = hasChapter.objects.filter(user=request.user)
+                all_haschapters.update(chapter_attempt=F('chapter_attempt') + 1)
+
+        # Reset chapter questions if the users' skill rating is too low for the remaining questions (e.g failed on all the easy questions and only the hard questions remains in the question pool).
+        elif abs(
+                        next_question_difficulty - next_chapter_difficulty) > boundary_reset_chapter and search_new_question_attempt < 1:
+            next_haschapter.chapter_attempt += 1
+            next_haschapter.save()
+            search_new_question_attempt += 1
+        else:
+            break
+    return next_question_id
+
+@login_required(login_url="/login/")
+def get_chapters(request):
+    questions_chapter = {}
+    questions_chapter_answered = {}
+    questions_in_subject = {}
+    questions_in_subject_answered = {}
+    current_user = request.user
+    questions_by_user = hasAnswered.objects.all().filter(submitted_by=current_user, wasCorrect=True)
+    for i in Chapter.objects.all():
+        questions_chapter_answered[i] = 0
+        questions = Question.objects.filter(chapter=i)
+        questions_chapter[i] = len(questions)
+
+        for s in list(questions_by_user):
+            if s.submitted_answer.chapter == i:
+                questions_chapter_answered[i] += 1
+    for t in Subject.objects.all():
+        questions_in_subject[t] = 0
+        questions_in_subject_answered[t] = 0
+        for chapter in questions_chapter.keys():
+            if chapter.part_of == t:
+                questions_in_subject[t] += questions_chapter[chapter]
+
+        for chapter in questions_chapter_answered.keys():
+            if chapter.part_of == t:
+                questions_in_subject_answered[t] += questions_chapter_answered[chapter]
+    subject = []
+    subject_answered = []
+    count = []
+    for q in questions_in_subject.keys():
+        subject.append(q)
+        subject_answered.append(questions_in_subject_answered[q])
+        count.append(questions_in_subject[q])
+    return zip(subject, subject_answered, count)
