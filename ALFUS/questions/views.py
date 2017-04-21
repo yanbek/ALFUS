@@ -85,7 +85,9 @@ def profile(request):
         skill_r = i.skill_rating_chapter
         chapters.append(i.chapter.name)
         skill.append(skill_r)
-        if skill_r >= 0.89:
+        if skill_r == 0.5:
+            grades.append("Not enough information to grade yet")
+        elif skill_r >= 0.89:
             grades.append("A")
         elif skill_r >= 0.77:
             grades.append("B")
