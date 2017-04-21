@@ -18,12 +18,19 @@ form {
     <form method="post">
         {% csrf_token %}
         <div class="form-group centered"  style="width: 300px;">
+        <p> Type in your new mail </p>
         {{ form.email }}
         </div>
         <button type="submit">Submit</button>
     </form>
     <br>
 </div>
+
+{% if messages %}
+    {% for message in messages %}
+      <div class="alert {% if message.tags %} alert-{{ message.tags }}{% endif %}">{{ message|safe }}</div>
+    {% endfor %}
+  {% endif %}
 
 <h6> You will redirected to profile page after changing the email</h6>
 
