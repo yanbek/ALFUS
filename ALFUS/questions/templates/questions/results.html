@@ -3,10 +3,25 @@
 <div class="container">
     <body>
     <div class="container">
-        <h1>{{ question.question_text }}</h1>
-        <h3>{{ is_correct}}</h3>
+{#        <h1>{{ question.question_text }}</h1>#}
+        {% if next_question == None and single_question == False %}
+            <h3>{{ "No more questions left!"}}</h3>
+            {% if is_correct %}
+                <h3>{{ "Correct answer!"}}</h3>
+            {% endif %}
+        {% elif is_correct %}
+            <h3>{{ "Correct answer!"}}</h3>
+        {% else %}
+            <h3>{{ "Wrong answer!"}}</h3>
+        {% endif %}
 
-        <a href="{% url 'questions:detail' subject_id next_question%}" class="btn btn-default" role="button">Next question</a>
+        {% if next_question == None and single_question == False  %}
+            <a href="{% url 'questions:index' %}" class="btn btn-default" role="button">Go back</a>
+        {% elif single_question == True %}
+            <a href="{% url 'questions:search' %}" class="btn btn-default" role="button">Go back</a>
+        {% else %}
+            <a href="{% url 'questions:detail' subject_id next_question%}" class="btn btn-default" role="button">Next question</a>
+        {% endif %}
     </div>
     </body>
 </div>

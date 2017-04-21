@@ -166,31 +166,33 @@ def index_questions(request, subject_id):
     request.session['question_dict'] = question_dict
 
     next_question_id = get_next_question(request)
-    if isinstance(next_question_id, HttpResponse):
-        return next_question_id
-    else:
-        return render(request, 'questions/index_questions.html',
-                    {'next_question_id': next_question_id, 'subject_id': subject_id, 'subject_name': subject_name, "chapters": zipped})
+
+    return render(request, 'questions/index_questions.html',
+                {'next_question_id': next_question_id, 'subject_id': subject_id, 'subject_name': subject_name, "chapters": zipped})
 
 
 @login_required(login_url="/login/")
-def detail(request, question_id, subject_id):
+def detail(request, question_id, subject_id, single_question):
     try:
-        question = get_object_or_404(Question, pk=question_id)
-        # Check if the hasChapter relationship exists. If not exists, create one.
-        if not hasChapter.objects.filter(user=request.user, chapter=question.chapter_id).exists():
-            haschapter = hasChapter(user=request.user, chapter=Chapter.objects.get(pk=question.chapter_id))
-            haschapter.save()
+        if not question_id == 'None':
+            question = get_object_or_404(Question, pk=question_id)
+             # Check if the hasChapter relationship exists. If not exists, create one.
+            if not hasChapter.objects.filter(user=request.user, chapter=question.chapter_id).exists():
+                haschapter = hasChapter(user=request.user, chapter=Chapter.objects.get(pk=question.chapter_id))
+                haschapter.save()
+            else:
+                haschapter = hasChapter.objects.get(user=request.user, chapter=question.chapter_id)
         else:
-            haschapter = hasChapter.objects.get(user=request.user, chapter=question.chapter_id)
+            return render(request, 'questions/results.html',
+                          {'next_question': None,'single_question': False })
     except Question.DoesNotExist:
         raise Http404("Question doesn't exist")
     return render(request, 'questions/detail.html',
-                  {'question': question, 'haschapter': haschapter, 'subject_id': subject_id})
+                  {'question': question, 'haschapter': haschapter, 'subject_id': subject_id, 'single_question': single_question})
 
 
 @login_required(login_url="/login/")
-def answer(request, question_id, subject_id):
+def answer(request, question_id, subject_id, single_question):
     question = get_object_or_404(Question, pk=question_id)
     try:
         # Save answer
@@ -198,10 +200,9 @@ def answer(request, question_id, subject_id):
         isCorrect = selected_choice.correct
         # If already answered this question, modify old answer, else create new
         if not hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).exists():
-            answer = hasAnswered(firstWasCorrect=isCorrect, wasCorrect=isCorrect, submitted_by=request.user, submitted_answer=question)
+            answer = hasAnswered(firstWasCorrect=isCorrect, wasCorrect=isCorrect, submitted_by=request.user, submitted_answer=question, answer_attempt = 1)
         else:
-            answer = hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=question).latest(
-            'answer_attempt')
+            answer = hasAnswered.objects.get(submitted_by=request.user, submitted_answer=question)
             answer.answer_attempt = answer.answer_attempt + 1
             answer.wasCorrect = isCorrect
         answer.save()
@@ -249,16 +250,17 @@ def answer(request, question_id, subject_id):
 
         return render(request, 'questions/detail.html', {
             'question': question, 'subject_id': subject_id,
-            'error_message': "You didn't select a choice.", 'haschapter': haschapter
+            'error_message': "You didn't select an answer.", 'haschapter': haschapter
         })
     else:
-
-        if isinstance(next_question_id, HttpResponse):
-            return next_question_id
+        if (single_question == 'S'):
+            single_question = True
         else:
-            return render(request, 'questions/results.html',
+            single_question = False
+
+        return render(request, 'questions/results.html',
                           {'question': question, 'is_correct': selected_choice.is_correct,
-                           'next_question': next_question_id, 'subject_id': subject_id})
+                           'next_question': next_question_id, 'subject_id': subject_id, 'single_question': single_question})
 
 @login_required(login_url="/login/")
 def get_next_question(request):
@@ -300,12 +302,13 @@ def get_next_question(request):
         if next_question_id is None:
 
             if (not hasAnswered.objects.filter(Q(submitted_by=request.user) & Q(wasCorrect=False)).exists()):
-                zipped = get_chapters(request)
-                return render(request, 'questions/index.html', {'subject_list': zipped})
+                #zipped = get_chapters(request)
+                #return render(request, 'questions/index.html', {'subject_list': zipped})
+                return next_question_id
             else:
+                print(hasAnswered.objects.filter(Q(submitted_by=request.user) & Q(wasCorrect=False)).values())
                 all_haschapters = hasChapter.objects.filter(user=request.user)
                 all_haschapters.update(chapter_attempt=F('chapter_attempt') + 1)
-
         # Reset chapter questions if the users' skill rating is too low for the remaining questions (e.g failed on all the easy questions and only the hard questions remains in the question pool).
         elif abs(
                         next_question_difficulty - next_chapter_difficulty) > boundary_reset_chapter and search_new_question_attempt < 1:
