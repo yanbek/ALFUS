@@ -52,7 +52,7 @@ class DynamicDifficultyTest(TestCase):
         q1pk = self.q1.pk
         old_difficulty = Question.objects.get(pk=q1pk).difficulty
         for user in self.users:
-            has_answered = hasAnswered(wasCorrect=False, submitted_by=user, submitted_answer=Question.objects.get(pk=q1pk))
+            has_answered = hasAnswered(wasCorrect=False, firstWasCorrect=False ,submitted_by=user, submitted_answer=Question.objects.get(pk=q1pk))
             has_answered.save()
 
         # Make a instance of the difficulty_adjustment class
@@ -68,7 +68,7 @@ class DynamicDifficultyTest(TestCase):
         q2pk = self.q2.pk
         old_difficulty = Question.objects.get(pk=q2pk).difficulty
         for user in self.users:
-            has_answered = hasAnswered(wasCorrect=True, submitted_by=user, submitted_answer=Question.objects.get(pk=q2pk))
+            has_answered = hasAnswered(wasCorrect=True, firstWasCorrect=True, submitted_by=user, submitted_answer=Question.objects.get(pk=q2pk))
             has_answered.save()
 
         # Make a instance of the difficulty_adjustment class
