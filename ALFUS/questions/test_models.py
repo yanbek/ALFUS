@@ -130,7 +130,7 @@ class QuestionModelsTest(TestCase):
             i.save()
 
         # Create a hasAnswered relationship
-        user_has_answered_q = hasAnswered(submitted_by=user, submitted_answer=q, wasCorrect=False)
+        user_has_answered_q = hasAnswered(submitted_by=user, submitted_answer=q, wasCorrect=False, firstWasCorrect=False)
         user_has_answered_q.save()
         self.assertEqual(len(hasAnswered.objects.all()), 1)
 
