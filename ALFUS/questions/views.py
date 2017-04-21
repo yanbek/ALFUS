@@ -306,7 +306,6 @@ def get_next_question(request):
                 #return render(request, 'questions/index.html', {'subject_list': zipped})
                 return next_question_id
             else:
-                print(hasAnswered.objects.filter(Q(submitted_by=request.user) & Q(wasCorrect=False)).values())
                 all_haschapters = hasChapter.objects.filter(user=request.user)
                 all_haschapters.update(chapter_attempt=F('chapter_attempt') + 1)
         # Reset chapter questions if the users' skill rating is too low for the remaining questions (e.g failed on all the easy questions and only the hard questions remains in the question pool).
