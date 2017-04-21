@@ -2,20 +2,26 @@
 
 {% block content %}
 
-     <h1> Courses</h1>
-    
- <div style="padding-top: 10px;">
+    <h1> Courses</h1>
+
+    <div style="padding-top: 10px;">
         {% if subject_list %}
-     <!-- Inside index.html -->
-        <ul class="list-group">
-            {% for subject, subject_answered, count in subject_list %}
-        <li class="list-group-item">
-            <a href="{% url 'questions:index_questions' subject.id %}">{{ subject }}</a>
-             &emsp;  {{subject_answered}}/{{count}}
-            {% endfor %}
-        </ul>
+            <!-- Inside index.html -->
+            <ul class="list-group">
+                {% for subject, subject_answered, count in subject_list %}
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-xs-1">
+                                <a href="{% url 'questions:index_questions' subject.id %}">{{ subject }}</a>
+                            </div>
+                                &emsp; {{ subject_answered }}/{{ count }}
+                                <h> questions done.</h>
+                        </div>
+                    </div>
+                {% endfor %}
+            </ul>
         {% else %}
-        <p>No courses are available.</p>
+            <p>No courses are available.</p>
         {% endif %}
     </div>
 
