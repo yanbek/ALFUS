@@ -365,6 +365,10 @@ def get_chapters(request):
 def reset(request):
     # Reset all questions
     all_hasAnswer = hasAnswered.objects.filter(submitted_by=request.user)
+    all_hasChapter = hasChapter.objects.filter(user=request.user)
     all_hasAnswer.update(wasCorrect=False)
+    all_hasChapter.update(chapter_attempt=1)
+    all_hasChapter.update(skill_rating_chapter=0.5)
+    all_hasAnswer.update(answer_attempt=1)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
