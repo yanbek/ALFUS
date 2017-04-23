@@ -167,7 +167,7 @@ def index_questions(request, subject_id):
         question_dict[question.chapter_id].append((question.id, question.difficulty))
     request.session['question_dict'] = question_dict
 
-    next_question_id = get_next_question(request)
+    next_question_id = get_next_question(request, subject_id)
 
     return render(request, 'questions/index_questions.html',
                 {'next_question_id': next_question_id, 'subject_id': subject_id, 'subject_name': subject_name, "chapters": zipped})
@@ -255,7 +255,7 @@ def answer(request, question_id, subject_id, single_question):
         user_hasChapter_current.skill_rating_chapter = new_rating
         user_hasChapter_current.save()
 
-        next_question_id = get_next_question(request)
+        next_question_id = get_next_question(request, subject_id)
 
     except (KeyError, Choice.DoesNotExist):  # Redisplay the question voting form.
 
@@ -271,7 +271,7 @@ def answer(request, question_id, subject_id, single_question):
                            'next_question': next_question_id, 'subject_id': subject_id, 'single_question': single_question})
 
 @login_required(login_url="/login/")
-def get_next_question(request):
+def get_next_question(request, subject_id):
     # Get next question by selecting an unanswered question that match the current skill rating.
     # Prioritize chapters with lower skill rating.
     # The question that gives the lowest delta is the winner.
@@ -309,7 +309,7 @@ def get_next_question(request):
                     next_haschapter = haschapter
         if next_question_id is None:
 
-            if (not hasAnswered.objects.filter(Q(submitted_by=request.user) & Q(wasCorrect=False)).exists()):
+            if (not hasAnswered.objects.filter(Q(submitted_by=request.user) & Q(wasCorrect=False) & Q(submitted_answer__chapter__part_of=subject_id)).exists()):
                 #zipped = get_chapters(request)
                 #return render(request, 'questions/index.html', {'subject_list': zipped})
                 return next_question_id
