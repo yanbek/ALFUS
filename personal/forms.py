@@ -13,7 +13,7 @@ class UserRegisterForm(forms.ModelForm):
     username = forms.CharField(label="Choose your username", max_length=64, widget=forms.TextInput(
         attrs={'class': 'form-control', 'style': 'text-align:center'}))
     email = forms.EmailField(label="Email address", widget=forms.TextInput(
-        attrs={'style': 'text-align:center'}))
+        attrs={'class': 'form-control', 'style': 'text-align:center'}))
     password1 = forms.CharField(min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control', 'style': 'text-align:center'}), label="Create a password")
     password2 = forms.CharField(min_length=6, widget=forms.PasswordInput(attrs={'class': 'form-control', 'style': 'text-align:center'}), label="Confirm your password")
     first_name = forms.CharField(label="First name", max_length=64, widget=forms.TextInput(
