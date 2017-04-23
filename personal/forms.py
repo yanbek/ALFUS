@@ -5,8 +5,8 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 
 class LoginForm(forms.Form):
     username = forms.CharField(label="Username", max_length=64, widget=forms.TextInput(
-        attrs={'class': 'form-control'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+        attrs={'class': 'form-control', 'style': 'text-align:center'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'style': 'text-align:center'}))
 
 
 class UserRegisterForm(forms.ModelForm):
