@@ -257,13 +257,12 @@ def answer(request, question_id, subject_id, single_question):
 
         next_question_id = get_next_question(request, subject_id)
 
-    except (KeyError, Choice.DoesNotExist):  # Redisplay the question voting form.
-
+    except (Choice.DoesNotExist, KeyError) as ex:  # Redisplay the question voting form.
         haschapter = hasChapter.objects.get(user=request.user, chapter=Chapter.objects.get(pk=question.chapter_id))
 
         return render(request, 'questions/detail.html', {
             'question': question, 'subject_id': subject_id,
-            'error_message': "You didn't select an answer.", 'haschapter': haschapter
+            'error_message': "You didn't select an answer.", 'haschapter': haschapter, 'single_question': single_question
         })
     else:
         return render(request, 'questions/results.html',
