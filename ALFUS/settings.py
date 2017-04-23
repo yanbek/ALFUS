@@ -24,7 +24,7 @@ SECRET_KEY = '$q4ln@fmb7aki^v=e-ywb+w7-cu+iznl)n$b!00i2f-t10hht@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['178.62.65.93', '127.0.0.1']
+ALLOWED_HOSTS = ['139.59.165.62', '127.0.0.1']
 
 CRON_CLASSES = [
     "questions.cron.Difficulty_adjustment",
@@ -95,8 +95,12 @@ WSGI_APPLICATION = 'Django.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'ALFUS',
+        'USER': 'ALFUSuser',
+        'PASSWORD': 'D1xsPuEUakGSPg5',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -138,3 +142,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
