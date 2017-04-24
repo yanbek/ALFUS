@@ -1,26 +1,39 @@
 {% extends "questions/base.html" %}
 
 {% block content %}
-    <h1> Question list</h1>
+ 
+
+
+
+
+<div id="body">
+<div class="container">
+    <h2> Search for a question by topic</h2>
 
    <form method='GET' action="{% url 'questions:search' %}">
-    <input type='text' name='q' placeholder='Search posts'/>
-    <input type='submit' value='Search'/>
-</form>
+    <input type='text' name='q' placeholder='Search'/>
+    <input class="btn btn-default" type='submit' value='Search'/>
+    </form>
 
 
-{% if topics %}
-    <!-- Inside search.html -->
-    <ul class="list-group">
-        {% for question in topics %}
-        <li class="list-group-item"> {{ question.topic_text }}  &emsp; &emsp;  
-            <a href="{% url 'questions:detail' question.chapter_id question.id 'S'%}">{{ question.question_text }}</a>
-        </li>
-        {% endfor %}
-    </ul>
+    {% if all_topics %}
+        <p> Search a topic containing questions you would like to do tasks about.</p>
+
+    {% if topics %}
+        <!-- Inside search.html -->
+        <ul class="list-group" style="width: 97%;">
+            {% for question in topics %}
+            <li class="list-group-item"> {{ question.topic_text }}  &emsp; &emsp;
+                <a href="{% url 'questions:detail' question.chapter_id question.id 'S'%}">{{ question.question_text }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+                {% endif %}
     {% else %}
-    <p>No questions are available.</p>
+        <p> Could not find any questions</p>
     {% endif %}
+</div>
+    </div>
 
 
 {% endblock %}
