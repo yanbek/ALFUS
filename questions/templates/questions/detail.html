@@ -4,11 +4,25 @@
 {% block content %}
 
 
-
+    <style type="text/css">
+        .difficulty_text {
+            color: {{ question_difficulty_color }};
+            text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+            float: left;
+            text-align: left;
+            left: 10px;
+            position: relative;
+        }
+    </style>
     <!-- Kun til testing. Bør fjernes/byttes ut senere.
     ================================================== -->
     <div class="container">
         <h1>Chapter: {{ haschapter.chapter }}</h1>
+        <div>
+            <h4 style="float: left;left: 5px; position: relative;" {{ question_difficulty_color }}>Question
+                difficulty: </h4>
+            <h4 class="difficulty_text" {{ question_difficulty_color }}> {{ question_difficulty }}</h4>
+        </div>
     </div>
     <!--
     ================================================== -->
@@ -18,7 +32,7 @@
 
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
-    <form action="{% url 'questions:answer' subject_id question.id single_question%}" method="post">
+    <form action="{% url 'questions:answer' subject_id question.id single_question %}" method="post">
         {% csrf_token %}
         {% for choice in question.choice_set.all %}
             <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}"/>
@@ -26,15 +40,15 @@
         {% endfor %}
         <button type="submit" class="btn btn-default">Submit</button>
     </form>
-<br>
-    <h4>Estimated skill level in subject {{ haschapter.chapter.part_of }}: {{subject_grade}}<br /></h4>
-    <h4>Estimated skill level in chapter {{ haschapter.chapter }}: {{grade}}<br /></h4>
+    <br>
+    <h4>Estimated skill level in subject {{ haschapter.chapter.part_of }}: {{ subject_grade }}<br/></h4>
+    <h4>Estimated skill level in chapter {{ haschapter.chapter }}: {{ grade }}<br/></h4>
 
-    <br> 
+    <br>
     <br>
     <h5> If you need some more help about this specific topic, there is some great links here: </h5>
     {% for url in question.urls_set.all %}
         <a href="{{ url.help_links }}"> {{ url.desc }} </a>
-        {% endfor %}
+    {% endfor %}
 
 {% endblock %}

@@ -17,6 +17,20 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.http import HttpResponse
 from itertools import chain
 
+
+
+def question_difficulty_number_to_text(number):
+    if number >= 0.85:
+        return("Very hard"), 'red'
+    elif number >= 0.65:
+        return("Hard"), 'orange'
+    elif number >= 0.35:
+        return("Medium"), 'yellow'
+    elif number >= 0.15:
+        return("Easy"), 'yellowgreen'
+    else:
+        return("Very Easy"), 'lime'
+
 def number_to_grade(number):
     if number == 0.5:
         return("Not enough information to grade yet")
@@ -237,10 +251,11 @@ def detail(request, question_id, subject_id, single_question):
 
     #Skill level to grade (subject)
     subject_grade = get_grade_subject(request)[haschapter.chapter.part_of]
+    question_difficulty, question_difficulty_color= question_difficulty_number_to_text(question.difficulty)
 
     return render(request, 'questions/detail.html',
                   {'question': question, 'haschapter': haschapter, 'subject_id': subject_id, 'single_question': single_question,
-                  "grade": grade, "subject_grade": subject_grade})
+                  "grade": grade, "subject_grade": subject_grade, 'question_difficulty': question_difficulty, 'question_difficulty_color' : question_difficulty_color})
 
 
 @login_required(login_url="/login/")
@@ -311,14 +326,18 @@ def answer(request, question_id, subject_id, single_question):
     except (Choice.DoesNotExist, KeyError) as ex:  # Redisplay the question voting form.
         haschapter = hasChapter.objects.get(user=request.user, chapter=Chapter.objects.get(pk=question.chapter_id))
 
+        question_difficulty, question_difficulty_color = question_difficulty_number_to_text(question.difficulty)
+
         return render(request, 'questions/detail.html', {
             'question': question, 'subject_id': subject_id,
-            'error_message': "You didn't select an answer.", 'haschapter': haschapter, 'single_question': single_question
+            'error_message': "You didn't select an answer.", 'haschapter': haschapter, 'single_question': single_question, 'question_difficulty': question_difficulty, 'question_difficulty_color' : question_difficulty_color
         })
     else:
         return render(request, 'questions/results.html',
                           {'question': question, 'is_correct': selected_choice.correct,
                            'next_question': next_question_id, 'subject_id': subject_id, 'single_question': single_question, 'feedback_btn_status': 'btn btn-secondary', 'feedback_btn': ''})
+
+
 
 @login_required(login_url="/login/")
 def get_next_question(request, subject_id):
@@ -375,6 +394,8 @@ def get_next_question(request, subject_id):
         else:
             break
     return next_question_id
+
+
 
 @login_required(login_url="/login/")
 def get_chapters(request):
