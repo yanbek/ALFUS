@@ -2,25 +2,51 @@
 
 {% block content %}
 
-    <h1> Courses</h1>
+    <style type="text/css">
+        .subjecttextstyle {
+            float: left;
+            position: relative;
+            left: 0px
+        }
+    </style>
+    <style type="text/css">
+        .questionprogresstextstyle {
+            float: left;
+            position: relative;
+            left: 80px
+        }
+    </style>
 
-    <div style="padding-top: 10px;">
+    <h1 style="top: 20px;position: relative"> Courses</h1>
+
+    <div class="container">
+
+        <!-- Kun til testing. Bør fjernes/byttes ut senere.
+        ================================================== -->
+        <div style="top: 20px;position: relative">
+            <h4 class="subjecttextstyle"> Subject </h4>
+            <h4 class="questionprogresstextstyle"> Questions done </h4>
+        </div>
+    </div>
+
+    <div style="padding-top: 20px;">
         {% if subject_list %}
             <!-- Inside index.html -->
-            <ul class="list-group">
+            <ul class="list-group" style=" width: 360px;table-layout: fixed;">
                 {% for subject, subject_answered, count in subject_list %}
                     <li class="list-group-item">
-                        <div class="row">
-                            <div class="col-xs-1">
-                                <a href="{% url 'questions:index_questions' subject.id %}">{{ subject }}</a>
-                            </div>
-                                &emsp; {{ subject_answered }}/{{ count }}
-                                <h> questions done.</h>
+                    <div class="row">
+                        <div class="col-xs-2" >
+                            <a href="{% url 'questions:index_questions' subject.id %}">{{ subject }}</a>
                         </div>
+                    <div class="col-xs-4" style="left: 110px">
+                        &emsp; {{ subject_answered }}/{{ count }}
+                    </div>
+                     </div>
                 {% endfor %}
             </ul>
         {% else %}
             <p>No courses are available.</p>
         {% endif %}
-</div>
+    </div>
 {% endblock %}

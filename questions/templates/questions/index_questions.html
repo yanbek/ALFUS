@@ -1,39 +1,73 @@
 {% extends "questions/base.html" %}
 
 {% block content %}
+    <style type="text/css">
+        .chaptertextstyle {
+            float: left;
+            position: relative;
+            left: 0px
+        }
+    </style>
+    <style type="text/css">
+        .progresstextstyle {
+            float: left;
+            position: relative;
+            left: 80px
+        }
+    </style>
+    <style type="text/css">
+        .gradetextstyle {
+            float: left;
+            position: relative;
+            left: 170px
 
+        }
+    </style>
+    <style type="text/css">
+        .list-group-item {
+            margin: 0;
+            min-width: 400px;
+            width: 100%;
+        }
+    </style>
 
+    <h1 style="top: 20px;position: relative;">{{ subject_name }} </h1>
     <div class="container">
-        <div class="container">
-            <h2 > {{ subject_name }} </h2>
-            <h2 > </h2>
-            <div style="padding-top: 10px;">
-                {% if chapters %}
-                <h4 >Chapter progress</h4>
-                    <!-- Inside index.html -->
-                    <ul class="list-group">
-                            {% for chapter, percent, grade in chapters %}
-                                <li class="list-group-item">
-                                <div class="row">
-                                    <div class="col-xs-1">
-                                            {{ chapter }}
-                                    </div>
-                                    <div class="col-xs-2">
-                                         Questions done: <progress value={{ percent }} max="1"></progress>
-                                    </div>
-                                    <div class="col-xs-4">
-                                        Grade: {{ grade }}
-                                    </div>
-                                </div>
-                            {% endfor %}
-                    </ul>
-                {% else %}
-                    <p>No courses are available.</p>
-                {% endif %}
-            </div>
-            <a href="{% url 'questions:detail' subject_id next_question_id %}" class="btn btn-default"
-               role="button">Start Test</a>
 
+        <!-- Kun til testing. Bør fjernes/byttes ut senere.
+        ================================================== -->
+        <div style="top: 20px;position: relative">
+            <h4 class="chaptertextstyle"> Chapter </h4>
+            <h4 class="progresstextstyle"> Progress </h4>
+            <h4 class="gradetextstyle"> Estimated chapter grade </h4>
         </div>
+    </div>
+    <div style="top: 20px;position: relative">
+        {% if chapters %}
+            <!-- Inside index.html -->
+            <ul class="list-group" style=" width: 560px;table-layout: fixed;">
+
+                {% for chapter, percent, grade in chapters %}
+                    <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-xs-1">
+                            {{ chapter }}
+                        </div>
+                        <div class="col-xs-2" style="left: 70px">
+                            <progress value={{ percent }} max="1"></progress>
+                        </div>
+                        <div class="col-xs-4" style="left: 180px;text-align: center;">
+                            {{ grade }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No courses are available.</p>
+        {% endif %}
+    </div>
+    <div style="padding-top: 30px">
+        <a href="{% url 'questions:detail' subject_id next_question_id %}" class="btn btn-default"
+           role="button">Start Test</a>
     </div>
 {% endblock %}

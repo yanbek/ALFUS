@@ -1,39 +1,62 @@
 {% extends "questions/base.html" %}
 
 {% block content %}
- 
 
 
 
 
-<div id="body">
-<div class="container">
-    <h2> Search for a question by topic</h2>
+    <div id="body">
+        <style type="text/css">
+            .topictextstyle {
 
-   <form method='GET' action="{% url 'questions:search' %}">
-    <input type='text' name='q' placeholder='Search'/>
-    <input class="btn btn-default" type='submit' value='Search'/>
-    </form>
+                padding-left: 10px
+            }
+        </style>
+        <style type="text/css">
+            .questiontextstyle {
+                padding-left: 190px
+            }
+        </style>
+        <h1 style="top: 20px;position: relative;padding-bottom: 40px"> Search </h1>
 
 
-    {% if all_topics %}
-        <p> Search a topic containing questions you would like to do tasks about.</p>
+        <form method='GET' action="{% url 'questions:search' %}" style="padding-left: 10px;padding-bottom: 10px">
+            <input type='text' name='q' placeholder='Search'/>
+            <input class="btn btn-default" type='submit' value='Search'/>
+        </form>
 
-    {% if topics %}
-        <!-- Inside search.html -->
-        <ul class="list-group" style="width: 97%;">
-            {% for question in topics %}
-            <li class="list-group-item"> {{ question.topic_text }}  &emsp; &emsp;
-                <a href="{% url 'questions:detail' question.chapter_id question.id 'S'%}">{{ question.question_text }}</a>
-            </li>
-            {% endfor %}
-        </ul>
-                {% endif %}
-    {% else %}
-        <p> Could not find any questions</p>
-    {% endif %}
-</div>
+
+        {% if all_topics %}
+            <p> Search a topic containing questions you would like to do tasks about.</p>
+
+            {% if topics %}
+                <!-- Inside search.html -->
+                <div style="top: 20px;display:flex;justify-content: flex-start">
+                    <h4 class="topictextstyle"> Topic </h4>
+                    <h4 class="questiontextstyle"> Question </h4>
+                </div>
+                <ul class="list-group" style=" width: 500px;table-layout: fixed;">
+                    {% for question in topics %}
+                        <li class="list-group-item">
+                            <div class="row">
+                                <div class="col-xs-2">
+                                    {{ question.topic_text }}
+                                </div>
+                                <div class="col-xs-4" style="left: 130px">
+                                    &emsp; <a
+                                        href="{% url 'questions:detail' question.chapter_id question.id 'S' %}">{{ question.question_text }}</a>
+                                </div>
+
+                            </div>
+                        </li>
+
+                    {% endfor %}
+                </ul>
+                </div>
+            {% endif %}
+        {% else %}
+            <p> Could not find any questions</p>
+        {% endif %}
     </div>
-
-
 {% endblock %}
+

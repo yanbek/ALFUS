@@ -2,53 +2,72 @@
 
 {% block content %}
 
-   <br>
-<div class="container">
-  <div class="row">
-    <div class="col-md-9">
-          <div class="row">
-          <div class="row">
-			<div class="col-md-4 text-center">
-            </div>
-            <div class="col-md-8">
-              <div class="row">
-                <div class="col-md-12">
-                  <h1 class="only-bottom-margin">{{ user.first_name }} {{ user.last_name }}'s profile </h1>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6">
-                    <span class="text-muted">Username:</span> {{ user.username }} <br>
-                  <span class="text-muted">Email:</span> {{ user.email }} <br>
-                </div>
-                <div class="col-md-6" >
-                      <a href="{% url 'questions:change_password' %}" class="btn btn-default pull-left" ><i class="glyphicon glyphicon-lock"  ></i> Change password </a>
-                    <a href="{% url 'questions:change_email' %}" class="btn btn-default pull-left" ><i class="glyphicon glyphicon-envelope"  ></i> Change email </a>
-                    <a href="{% url 'questions:reset' %}" class="btn btn-default pull-right" ><i class="glyphicon glyphicon-off"  ></i> Reset </a>
+    <h1 style="top: 20px;position: relative"> Profile</h1>
+
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9">
+                <div class="row">
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            {#              <div class="row">#}
+                            {#                <div class="col-md-12">#}
+                            {#                  <h1 class="only-bottom-margin">{{ user.first_name }} {{ user.last_name }}'s profile </h1>#}
+                            {#                </div>#}
+                            {#              </div>#}
+                            <div class="row">
+                                <div style="padding-left: 20px;padding-top: 20px">
+                                    <span class="text-muted">Username:</span> {{ user.username }} <br>
+                                    <span class="text-muted">Email:</span> {{ user.email }} <br>
+                                </div>
+                                <div style="padding-top: 20px;display:flex;justify-content: flex-start; padding-left: 20px; padding-bottom: 20px">
+                                    <div style="margin-right: 16px">
+                                        <a href="{% url 'questions:change_password' %}"
+                                           class="btn btn-default pull-left"><i
+                                                class="glyphicon glyphicon-lock"></i> Change password </a>
+                                    </div>
+                                    <a href="{% url 'questions:change_email' %}" class="btn btn-default pull-left"><i
+                                            class="glyphicon glyphicon-envelope"></i> Change email </a>
+                                    <div style="margin-left: 16px">
+
+                                        <a href="{% url 'questions:reset' %}" class="btn btn-default pull-right"><i
+                                                class="glyphicon glyphicon-off"></i> Reset </a>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
-              </div>
+                </div>
             </div>
-          </div>
+
+            <div class="col-md-12 text-left">
+                <a href="{% url 'questions:delete_user' %}"><i class="glyphicon glyphicon-trash"></i> Delete profile?
+                </a>
+            </div>
+        </div>
+        <div>
+            <ul class="list-group" style=" width: 200px;table-layout: fixed; padding-top: 10px;padding-right: 10px">
+                <h4>Current grades</h4>
+
+                {% for chapter, grade in skills %}
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-xs-2">
+                                {{ chapter }}:
+                            </div>
+                            <div class="col-xs-4" style="left: 50px">
+                                &emsp; {{ grade }}
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
     </div>
-  </div>
-
-
-<div class="col-md-12 text-left">
-<a href="{% url 'questions:delete_user' %}"><i class="glyphicon glyphicon-trash"  ></i> Delete profile? </a>
-</div>
-
-<div class="row">
-    <div class="col-md-6">
-        <h3>Current grades:</h3>
-    <ul style="list-style-type:none">
-     {% for chapter, grade in skills %}
-        <li>{{chapter}}: {{ grade }}
-        </li>
-    {% endfor %}
-    </ul>
-    </div>
-</div>
-      </div>
 
 
 
