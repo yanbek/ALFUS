@@ -15,6 +15,41 @@ from itertools import chain
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from django.http import HttpResponse
+from itertools import chain
+
+def number_to_grade(number):
+    if number == 0.5:
+        return("Not enough information to grade yet")
+    elif number >= 0.89:
+        return("A")
+    elif number >= 0.77:
+        return("B")
+    elif number >= 0.65:
+        return("C")
+    elif number >= 0.53:
+        return("D")
+    elif number >= 0.41:
+        return("E")
+    else:
+        return("F")
+
+
+def get_grade_subject(request):
+    skillrating_chapters = hasChapter.objects.filter(user=request.user)
+    subject_grade = {}
+
+    for t in list(Subject.objects.all()):
+        count = 0
+        temp = 0
+        for q in list(skillrating_chapters):
+            if q.chapter.part_of == t:
+                print(q)
+                temp += q.skill_rating_chapter
+                count += 1
+        subject_grade[t] = number_to_grade(temp / count)
+
+    return(subject_grade)
+
 
 @login_required(login_url="/login/")
 def feedback(request):
@@ -87,33 +122,18 @@ def change_password(request):
 
 @login_required(login_url="/login/")
 def profile(request):
-    skillrating_chapters = hasChapter.objects.filter(user=request.user)
-    chapters = []
-    skill = []
-    grades = []
-    for i in list(skillrating_chapters):
-        skill_r = i.skill_rating_chapter
-        chapters.append(i.chapter.name)
-        skill.append(skill_r)
-        if skill_r == 0.5:
-            grades.append("Not enough information to grade yet")
-        elif skill_r >= 0.89:
-            grades.append("A")
-        elif skill_r >= 0.77:
-            grades.append("B")
-        elif skill_r >= 0.65:
-            grades.append("C")
-        elif skill_r >= 0.53:
-            grades.append("D")
-        elif skill_r >= 0.41:
-            grades.append("E")
-        else:
-            grades.append("F")
+    temp = get_grade_subject(request)
+    subject = []
+    grades_letter = []
 
-    zipped_skills = zip(chapters, skill)
-    zipped_grades = zip(chapters, grades)
+    for i in temp.keys():
+        subject.append(i)
+        grades_letter.append(temp[i])
 
-    return render(request, 'questions/profile.html', {"skills": zipped_skills, "grades": zipped_grades})
+
+    zipped = zip(subject, grades_letter)
+
+    return render(request, 'questions/profile.html', {"skills": zipped})
 
 @login_required(login_url="/login/")
 def search(request):
@@ -159,15 +179,23 @@ def index_questions(request, subject_id):
             if chapter.part_of == subject:
                 questions_in_subject_answered[chapter] = questions_chapter_answered[chapter]
 
-    print(questions_in_subject)
-    print(questions_in_subject_answered)
     chapter = []
     percent = []
+    grades = []
 
     for q in questions_in_subject.keys():
         chapter.append(q)
+        skill_r = hasChapter.objects.filter(user=current_user, chapter=q)[0].skill_rating_chapter
+
+        grades.append(number_to_grade(skill_r))
+
         percent.append(questions_in_subject_answered[q] / questions_in_subject[q])
-    zipped = zip(chapter, percent)
+
+
+
+
+
+    zipped = zip(chapter, percent, grades)
 
     question_list = Question.objects.filter(chapter__part_of_id=subject_id)
     subject_name = Subject.objects.get(pk=subject_id)
@@ -199,8 +227,19 @@ def detail(request, question_id, subject_id, single_question):
                           {'next_question': None,'single_question': False })
     except Question.DoesNotExist:
         raise Http404("Question doesn't exist")
+
+    #Skill level to grade (chapter)
+    grade = ""
+    skill_r = haschapter.skill_rating_chapter
+
+    grade = number_to_grade(skill_r)
+
+    #Skill level to grade (subject)
+    subject_grade = get_grade_subject(request)[haschapter.chapter.part_of]
+
     return render(request, 'questions/detail.html',
-                  {'question': question, 'haschapter': haschapter, 'subject_id': subject_id, 'single_question': single_question})
+                  {'question': question, 'haschapter': haschapter, 'subject_id': subject_id, 'single_question': single_question,
+                  "grade": grade, "subject_grade": subject_grade})
 
 
 @login_required(login_url="/login/")
