@@ -1,7 +1,14 @@
 {% extends "questions/base.html" %}
 
 {% block content %}
-
+    <style>
+        .hideextra {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-left: 20px
+        }
+    </style>
     <h1 style="top: 20px;position: relative"> Profile</h1>
 
     <br>
@@ -49,7 +56,7 @@
             </div>
         </div>
         <div>
-            <ul class="list-group" style=" width: 200px;table-layout: fixed; padding-top: 10px;padding-right: 10px">
+            <ul class="list-group" style=" width: 360px;table-layout: fixed; padding-top: 10px;padding-right: 10px">
                 <h4>Current grades</h4>
 
                 {% for chapter, grade in skills %}
@@ -58,7 +65,7 @@
                             <div class="col-xs-2">
                                 {{ chapter }}:
                             </div>
-                            <div class="col-xs-4" style="left: 50px">
+                            <div class="hideextra">
                                 &emsp; {{ grade }}
                             </div>
                         </div>
