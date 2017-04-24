@@ -12,14 +12,17 @@
                 {% if chapters %}
                     <!-- Inside index.html -->
                     <ul class="list-group">
-                            {% for subject, percent in chapters %}
+                            {% for subject, percent, grade in chapters %}
                                 <li class="list-group-item">
                                 <div class="row">
                                     <div class="col-xs-1">
-                                            {{ subject }}:
+                                            {{ subject }}
                                     </div>
                                     <div class="col-xs-2">
-                                         Questions done <progress value={{ percent }} max="1"></progress>
+                                         Questions done: <progress value={{ percent }} max="1"></progress>
+                                    </div>
+                                    <div class="col-xs-1">
+                                        Grade: {{ grade }}
                                     </div>
                                 </div>
                             {% endfor %}

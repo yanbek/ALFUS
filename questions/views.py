@@ -162,11 +162,34 @@ def index_questions(request, subject_id):
 
     chapter = []
     percent = []
+    grades = []
 
     for q in questions_in_subject.keys():
         chapter.append(q)
+        skill_r = hasChapter.objects.filter(user=current_user, chapter=q)[0].skill_rating_chapter
+
+        if skill_r == 0.5:
+            grades.append("Not enough information to grade yet")
+        elif skill_r >= 0.89:
+            grades.append("A")
+        elif skill_r >= 0.77:
+            grades.append("B")
+        elif skill_r >= 0.65:
+            grades.append("C")
+        elif skill_r >= 0.53:
+            grades.append("D")
+        elif skill_r >= 0.41:
+            grades.append("E")
+        else:
+            grades.append("F")
+
         percent.append(questions_in_subject_answered[q] / questions_in_subject[q])
-    zipped = zip(chapter, percent)
+
+
+
+
+
+    zipped = zip(chapter, percent, grades)
 
     question_list = Question.objects.filter(chapter__part_of_id=subject_id)
     subject_name = Subject.objects.get(pk=subject_id)
@@ -198,8 +221,29 @@ def detail(request, question_id, subject_id, single_question):
                           {'next_question': None,'single_question': False })
     except Question.DoesNotExist:
         raise Http404("Question doesn't exist")
+
+    #Skill level to grade
+    grade = ""
+    skill_r = haschapter.skill_rating_chapter
+
+    if skill_r == 0.5:
+        grade = "Not enough information to grade yet"
+    elif skill_r >= 0.89:
+        grade = "A"
+    elif skill_r >= 0.77:
+        grade = "B"
+    elif skill_r >= 0.65:
+        grade = "C"
+    elif skill_r >= 0.53:
+        grade = "D"
+    elif skill_r >= 0.41:
+        grade = "E"
+    else:
+        grade = "F"
+
     return render(request, 'questions/detail.html',
-                  {'question': question, 'haschapter': haschapter, 'subject_id': subject_id, 'single_question': single_question})
+                  {'question': question, 'haschapter': haschapter, 'subject_id': subject_id, 'single_question': single_question,
+                  "grade": grade})
 
 
 @login_required(login_url="/login/")
