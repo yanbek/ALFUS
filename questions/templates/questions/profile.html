@@ -19,11 +19,34 @@
                         <h4 style="left: 20px;top: 25px;position: relative">{{ user.first_name }} {{ user.last_name }}</h4>
                         <div class="col-md-6">
                             <div class="row">
-                                <div style="padding-left: 20px;padding-top: 20px">
+                                <div style="padding-left: 20px;padding-top: 25px">
                                     <span class="text-muted">Username:</span> {{ user.username }} <br>
                                     <span class="text-muted">Email:</span> {{ user.email }} <br>
                                 </div>
-                                <div style="padding-top: 20px;display:flex;justify-content: flex-start; padding-left: 20px; padding-bottom: 20px">
+
+                                <div>
+                                    <div style="position: relative; left:19px">
+                                        <ul class="list-group"
+                                            style=" width: 360px;table-layout: fixed; padding-top: 10px;padding-right: 10px">
+                                            <h4>Current estimated grades</h4>
+
+                                            {% for chapter, grade in skills %}
+                                                <li class="list-group-item">
+                                                    <div class="row">
+                                                        <div class="col-xs-2">
+                                                            {{ chapter }}:
+                                                        </div>
+                                                        <div class="hideextra">
+                                                            &emsp; {{ grade }}
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div style="display:flex;justify-content: flex-start; padding-left: 20px; padding-bottom: 20px">
                                     <div style="margin-right: 16px">
                                         <a href="{% url 'questions:change_password' %}"
                                            class="btn btn-default pull-left"><i
@@ -49,25 +72,6 @@
                 </a>
             </div>
         </div>
-        <div>
-            <ul class="list-group" style=" width: 360px;table-layout: fixed; padding-top: 10px;padding-right: 10px">
-                <h4>Current grades</h4>
-
-                {% for chapter, grade in skills %}
-                    <li class="list-group-item">
-                        <div class="row">
-                            <div class="col-xs-2">
-                                {{ chapter }}:
-                            </div>
-                            <div class="hideextra">
-                                &emsp; {{ grade }}
-                            </div>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-
     </div>
 
 
