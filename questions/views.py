@@ -187,16 +187,11 @@ def index_questions(request, subject_id):
     grades = []
 
     for q in questions_in_subject.keys():
-        chapter.append(q)
-        skill_r = hasChapter.objects.filter(user=current_user, chapter=q)[0].skill_rating_chapter
-
-        grades.append(number_to_grade(skill_r))
-
-        percent.append(questions_in_subject_answered[q] / questions_in_subject[q])
-
-
-
-
+        qSet = hasChapter.objects.filter(user=current_user, chapter=q)
+        if qSet:
+            chapter.append(q)
+            grades.append(number_to_grade(qSet[0].skill_rating_chapter))
+            percent.append(questions_in_subject_answered[q] / questions_in_subject[q])
 
     zipped = zip(chapter, percent, grades)
 
