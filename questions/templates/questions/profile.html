@@ -13,7 +13,7 @@
             <div class="col-md-8">
               <div class="row">
                 <div class="col-md-12">
-                  <h1 class="only-bottom-margin">{{ user.first_name }} {{ user.last_name }} 's profile </h1>
+                  <h1 class="only-bottom-margin">{{ user.first_name }} {{ user.last_name }}'s profile </h1>
                 </div>
               </div>
               <div class="row">
@@ -39,21 +39,14 @@
 
 <div class="row">
     <div class="col-md-6">
-        <h3>Current skill levels:</h3>
+        <h3>Current grades:</h3>
     <ul style="list-style-type:none">
-     {% for chapter, skill in skills %}
-        <li>{{chapter}}: <progress value={{skill}} max="1"></progress> {{skill}}</li>
+     {% for chapter, grade in skills %}
+        <li>{{chapter}}: {{ grade }}
+        </li>
     {% endfor %}
     </ul>
     </div>
-        <div class="col-md-6">
-            <h3>Current grades:</h3>
-            <ul style="list-style-type:none">
-        {% for chapter, grade in grades %}
-            <li>{{chapter}}: {{grade}}</li>
-        {% endfor %}
-    </ul>
-</div>
 </div>
       </div>
 

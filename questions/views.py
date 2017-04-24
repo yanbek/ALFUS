@@ -15,6 +15,7 @@ from itertools import chain
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 from django.http import HttpResponse
+from itertools import chain
 
 @login_required(login_url="/login/")
 def reset(request):
@@ -78,32 +79,42 @@ def change_password(request):
 @login_required(login_url="/login/")
 def profile(request):
     skillrating_chapters = hasChapter.objects.filter(user=request.user)
-    chapters = []
-    skill = []
+    subject = []
     grades = []
-    for i in list(skillrating_chapters):
-        skill_r = i.skill_rating_chapter
-        chapters.append(i.chapter.name)
-        skill.append(skill_r)
+    grades_letter = []
+
+    for t in list(Subject.objects.all()):
+        subject.append(t)
+        count = 0
+        temp = 0
+        for q in list(skillrating_chapters):
+            if q.chapter.part_of == t:
+                print(q)
+                temp += q.skill_rating_chapter
+                count += 1
+
+        grades.append(temp/count)
+
+    for i in grades:
+        skill_r = i
         if skill_r == 0.5:
-            grades.append("Not enough information to grade yet")
+            grades_letter.append("Not enough information to grade yet")
         elif skill_r >= 0.89:
-            grades.append("A")
+            grades_letter.append("A")
         elif skill_r >= 0.77:
-            grades.append("B")
+            grades_letter.append("B")
         elif skill_r >= 0.65:
-            grades.append("C")
+            grades_letter.append("C")
         elif skill_r >= 0.53:
-            grades.append("D")
+            grades_letter.append("D")
         elif skill_r >= 0.41:
-            grades.append("E")
+            grades_letter.append("E")
         else:
-            grades.append("F")
+            grades_letter.append("F")
 
-    zipped_skills = zip(chapters, skill)
-    zipped_grades = zip(chapters, grades)
+    zipped = zip(subject, grades_letter)
 
-    return render(request, 'questions/profile.html', {"skills": zipped_skills, "grades": zipped_grades})
+    return render(request, 'questions/profile.html', {"skills": zipped})
 
 @login_required(login_url="/login/")
 def search(request):
@@ -149,8 +160,6 @@ def index_questions(request, subject_id):
             if chapter.part_of == subject:
                 questions_in_subject_answered[chapter] = questions_chapter_answered[chapter]
 
-    print(questions_in_subject)
-    print(questions_in_subject_answered)
     chapter = []
     percent = []
 
