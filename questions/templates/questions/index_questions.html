@@ -7,9 +7,9 @@
         <div class="container">
             <h2 > {{ subject_name }} </h2>
             <h2 > </h2>
-            <h4 >Chapter progress</h4>
             <div style="padding-top: 10px;">
                 {% if chapters %}
+                <h4 >Chapter progress</h4>
                     <!-- Inside index.html -->
                     <ul class="list-group">
                             {% for chapter, percent, grade in chapters %}

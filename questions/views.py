@@ -156,6 +156,17 @@ def index(request):
 
 @login_required(login_url="/login/")
 def index_questions(request, subject_id):
+    question_list = Question.objects.filter(chapter__part_of_id=subject_id)
+    subject_name = Subject.objects.get(pk=subject_id)
+
+    question_dict = defaultdict(list)
+    for question in question_list:
+        question_dict[question.chapter_id].append((question.id, question.difficulty))
+    request.session['question_dict'] = question_dict
+
+    next_question_id = get_next_question(request, subject_id)
+
+    #Chapter info
     questions_chapter = {}
     questions_chapter_answered = {}
     questions_in_subject = {}
@@ -187,23 +198,14 @@ def index_questions(request, subject_id):
     grades = []
 
     for q in questions_in_subject.keys():
-        qSet = hasChapter.objects.filter(user=current_user, chapter=q)
+        qSet = hasChapter.objects.filter(chapter=q, user=current_user)
         if qSet:
-            chapter.append(q)
             grades.append(number_to_grade(qSet[0].skill_rating_chapter))
-            percent.append(questions_in_subject_answered[q] / questions_in_subject[q])
+
+        percent.append(questions_in_subject_answered[q] / questions_in_subject[q])
+        chapter.append(q)
 
     zipped = zip(chapter, percent, grades)
-
-    question_list = Question.objects.filter(chapter__part_of_id=subject_id)
-    subject_name = Subject.objects.get(pk=subject_id)
-
-    question_dict = defaultdict(list)
-    for question in question_list:
-        question_dict[question.chapter_id].append((question.id, question.difficulty))
-    request.session['question_dict'] = question_dict
-
-    next_question_id = get_next_question(request, subject_id)
 
     return render(request, 'questions/index_questions.html',
                 {'next_question_id': next_question_id, 'subject_id': subject_id, 'subject_name': subject_name, "chapters": zipped})
