@@ -9,8 +9,6 @@
     ================================================== -->
     <div class="container">
         <h1>Chapter: {{ haschapter.chapter }}</h1>
-        <h3>Estimated skill level ({{ haschapter.chapter }}): {{grade}}<br />
-        </h3>
     </div>
     <!--
     ================================================== -->
@@ -28,6 +26,9 @@
         {% endfor %}
         <button type="submit" class="btn btn-default">Submit</button>
     </form>
+<br>
+    <h4>Estimated skill level in subject {{ haschapter.chapter.part_of }}: {{subject_grade}}<br /></h4>
+    <h4>Estimated skill level in chapter {{ haschapter.chapter }}: {{grade}}<br /></h4>
 
     <br> 
     <br>

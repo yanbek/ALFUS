@@ -33,6 +33,24 @@ def number_to_grade(number):
     else:
         return("F")
 
+
+def get_grade_subject(request):
+    skillrating_chapters = hasChapter.objects.filter(user=request.user)
+    subject_grade = {}
+
+    for t in list(Subject.objects.all()):
+        count = 0
+        temp = 0
+        for q in list(skillrating_chapters):
+            if q.chapter.part_of == t:
+                print(q)
+                temp += q.skill_rating_chapter
+                count += 1
+        subject_grade[t] = number_to_grade(temp / count)
+
+    return(subject_grade)
+
+
 @login_required(login_url="/login/")
 def reset(request):
     all_hasAnswer = hasAnswered.objects.filter(submitted_by=request.user)
@@ -94,25 +112,14 @@ def change_password(request):
 
 @login_required(login_url="/login/")
 def profile(request):
-    skillrating_chapters = hasChapter.objects.filter(user=request.user)
+    temp = get_grade_subject(request)
     subject = []
-    grades = []
     grades_letter = []
 
-    for t in list(Subject.objects.all()):
-        subject.append(t)
-        count = 0
-        temp = 0
-        for q in list(skillrating_chapters):
-            if q.chapter.part_of == t:
-                print(q)
-                temp += q.skill_rating_chapter
-                count += 1
+    for i in temp.keys():
+        subject.append(i)
+        grades_letter.append(temp[i])
 
-        grades.append(temp/count)
-
-    for i in grades:
-        grades_letter.append(number_to_grade(i))
 
     zipped = zip(subject, grades_letter)
 
@@ -211,15 +218,18 @@ def detail(request, question_id, subject_id, single_question):
     except Question.DoesNotExist:
         raise Http404("Question doesn't exist")
 
-    #Skill level to grade
+    #Skill level to grade (chapter)
     grade = ""
     skill_r = haschapter.skill_rating_chapter
 
     grade = number_to_grade(skill_r)
 
+    #Skill level to grade (subject)
+    subject_grade = get_grade_subject(request)[haschapter.chapter.part_of]
+
     return render(request, 'questions/detail.html',
                   {'question': question, 'haschapter': haschapter, 'subject_id': subject_id, 'single_question': single_question,
-                  "grade": grade})
+                  "grade": grade, "subject_grade": subject_grade})
 
 
 @login_required(login_url="/login/")
