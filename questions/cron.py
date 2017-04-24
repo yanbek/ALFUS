@@ -21,13 +21,11 @@ class Difficulty_adjustment(CronJobBase):
             for question_id in question_dict:
                 total_answers = len(question_dict[question_id])
                 correct_answers = sum(question_dict[question_id])
-                if total_answers == 0:
-                    new_difficulty = 0
-                else:
+                if total_answers != 0:
                     new_difficulty = float(total_answers - correct_answers) / float(total_answers)
-                question = Question.objects.get(pk=question_id)
-                question.difficulty = new_difficulty
-                question.save()
+                    question = Question.objects.get(pk=question_id)
+                    question.difficulty = new_difficulty
+                    question.save()
             print("Difficulty weights have been successfully updated")
         except:
             print("Updating difficulty failed")
