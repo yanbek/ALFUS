@@ -17,6 +17,22 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.http import HttpResponse
 from itertools import chain
 
+def number_to_grade(number):
+    if number == 0.5:
+        return("Not enough information to grade yet")
+    elif number >= 0.89:
+        return("A")
+    elif number >= 0.77:
+        return("B")
+    elif number >= 0.65:
+        return("C")
+    elif number >= 0.53:
+        return("D")
+    elif number >= 0.41:
+        return("E")
+    else:
+        return("F")
+
 @login_required(login_url="/login/")
 def reset(request):
     all_hasAnswer = hasAnswered.objects.filter(submitted_by=request.user)
@@ -96,21 +112,7 @@ def profile(request):
         grades.append(temp/count)
 
     for i in grades:
-        skill_r = i
-        if skill_r == 0.5:
-            grades_letter.append("Not enough information to grade yet")
-        elif skill_r >= 0.89:
-            grades_letter.append("A")
-        elif skill_r >= 0.77:
-            grades_letter.append("B")
-        elif skill_r >= 0.65:
-            grades_letter.append("C")
-        elif skill_r >= 0.53:
-            grades_letter.append("D")
-        elif skill_r >= 0.41:
-            grades_letter.append("E")
-        else:
-            grades_letter.append("F")
+        grades_letter.append(number_to_grade(i))
 
     zipped = zip(subject, grades_letter)
 
@@ -168,20 +170,7 @@ def index_questions(request, subject_id):
         chapter.append(q)
         skill_r = hasChapter.objects.filter(user=current_user, chapter=q)[0].skill_rating_chapter
 
-        if skill_r == 0.5:
-            grades.append("Not enough information to grade yet")
-        elif skill_r >= 0.89:
-            grades.append("A")
-        elif skill_r >= 0.77:
-            grades.append("B")
-        elif skill_r >= 0.65:
-            grades.append("C")
-        elif skill_r >= 0.53:
-            grades.append("D")
-        elif skill_r >= 0.41:
-            grades.append("E")
-        else:
-            grades.append("F")
+        grades.append(number_to_grade(skill_r))
 
         percent.append(questions_in_subject_answered[q] / questions_in_subject[q])
 
@@ -226,20 +215,7 @@ def detail(request, question_id, subject_id, single_question):
     grade = ""
     skill_r = haschapter.skill_rating_chapter
 
-    if skill_r == 0.5:
-        grade = "Not enough information to grade yet"
-    elif skill_r >= 0.89:
-        grade = "A"
-    elif skill_r >= 0.77:
-        grade = "B"
-    elif skill_r >= 0.65:
-        grade = "C"
-    elif skill_r >= 0.53:
-        grade = "D"
-    elif skill_r >= 0.41:
-        grade = "E"
-    else:
-        grade = "F"
+    grade = number_to_grade(skill_r)
 
     return render(request, 'questions/detail.html',
                   {'question': question, 'haschapter': haschapter, 'subject_id': subject_id, 'single_question': single_question,
