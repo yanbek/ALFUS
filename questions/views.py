@@ -17,6 +17,16 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.http import HttpResponse
 
 @login_required(login_url="/login/")
+def feedback(request):
+
+    answer = hasAnswered.objects.filter(submitted_by=request.user, submitted_answer=request.POST.get('question'))
+    answer.update(firstWasCorrect=False)
+
+    return render(request, 'questions/results.html',
+                  {'question': request.POST.get('question'), 'is_correct': request.POST.get('is_correct'),
+                   'next_question': request.POST.get('next_question'), 'subject_id': request.POST.get('subject_id'), 'single_question': request.POST.get('single_question'), 'feedback_btn_status': 'btn btn-primary', 'feedback_btn': 'disabled'})
+
+@login_required(login_url="/login/")
 def reset(request):
     all_hasAnswer = hasAnswered.objects.filter(submitted_by=request.user)
     all_hasAnswer.update(wasCorrect=False)
@@ -257,6 +267,7 @@ def answer(request, question_id, subject_id, single_question):
 
         next_question_id = get_next_question(request, subject_id)
 
+
     except (Choice.DoesNotExist, KeyError) as ex:  # Redisplay the question voting form.
         haschapter = hasChapter.objects.get(user=request.user, chapter=Chapter.objects.get(pk=question.chapter_id))
 
@@ -266,8 +277,8 @@ def answer(request, question_id, subject_id, single_question):
         })
     else:
         return render(request, 'questions/results.html',
-                          {'question': question, 'is_correct': selected_choice.is_correct,
-                           'next_question': next_question_id, 'subject_id': subject_id, 'single_question': single_question})
+                          {'question': question, 'is_correct': selected_choice.correct,
+                           'next_question': next_question_id, 'subject_id': subject_id, 'single_question': single_question, 'feedback_btn_status': 'btn btn-secondary', 'feedback_btn': ''})
 
 @login_required(login_url="/login/")
 def get_next_question(request, subject_id):

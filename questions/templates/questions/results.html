@@ -1,48 +1,145 @@
 {% extends "questions/base.html" %}
 {% block content %}
-    <div class="container">
+    <div class="container" style="margin-top: 3em;">
         <body>
+        <style type="text/css">
+            .column {
+                float: left;
+                padding: 0 2px;
+            }
+        </style>
         <div class="container">
-            {#        <h1>{{ question.question_text }}</h1>#}
             {% if 'error' in is_correct %}
-                {% if next_question == None and single_question == False %}
+                {% if next_question == None and single_question == False or 'None' in next_question and 'False' in single_question%}
                     <h3>{{ "Question have already been answered!" }}</h3>
-                    <a href="{% url 'questions:index' %}" class="btn btn-default" role="button">Go back</a>
-                {% elif single_question == True %}
+                    <a href="{% url 'questions:index' %}" class="btn btn-default" role="button" , style="float: left;">Go
+                        back</a>
+                {% elif single_question == True or 'True' in  single_question%}
                     {% if is_correct == "error True" %}
-                        <h3>{{ "Correct answer!" }}</h3>
+                        <h3 style="margin-bottom: 2em;">{{ "Correct answer!" }}</h3>
+                        <div class="container">
+                            <div class="column">
+                                <h4 style="margin-bottom: 2em;">{{ "Did you find the question particulary hard to answer?" }}
+                                </h4>
+                            </div>
+                            <div class="column">
+                                <form action="{% url 'questions:feedback' %}"
+                                      method="post">{% csrf_token %}
+                                    <input type="hidden" name="question" value="{{ question.id }}">
+                                    <input type="hidden" name="is_correct" value="{{ is_correct }}">
+                                    <input type="hidden" name="next_question" value="{{ next_question }}">
+                                    <input type="hidden" name="subject_id" value="{{ subject_id }}">
+                                    <input type="hidden" name="single_question" value="{{ single_question }}">
+                                    <button type="submit" class="{{ feedback_btn_status }}" {{ feedback_btn }}>Yes</button>
+                                </form>
+                            </div>
+                        </div>
                     {% else %}
-                        <h3>{{ "Wrong answer!" }}</h3>
+                        <h3 style="margin-bottom: 2em;">{{ "Wrong answer!" }}</h3>
+                        <div class="container">
+                            <div class="column">
+                                <h4 style="margin-bottom: 2em;">{{ "Did you find the question particulary hard to answer?" }}
+                                </h4>
+                            </div>
+                            <div class="column">
+                                <form action="{% url 'questions:feedback' %}"
+                                      method="post">{% csrf_token %}
+                                    <input type="hidden" name="question" value="{{ question.id }}">
+                                    <input type="hidden" name="is_correct" value="{{ is_correct }}">
+                                    <input type="hidden" name="next_question" value="{{ next_question }}">
+                                    <input type="hidden" name="subject_id" value="{{ subject_id }}">
+                                    <input type="hidden" name="single_question" value="{{ single_question }}">
+                                    <button type="submit" class="{{ feedback_btn_status }}" {{ feedback_btn }}>Yes</button>
+                                </form>
+                            </div>
+                        </div>
                     {% endif %}
-                    <a href="{% url 'questions:search' %}" class="btn btn-default" role="button">Go back</a>
+                    <a href="{% url 'questions:search' %}" class="btn btn-default" role="button" style="float: left;">Go
+                        back</a>
                 {% else %}
                     <a href="{% url 'questions:detail' subject_id next_question %}" class="btn btn-default"
-                       role="button">Next
+                       role="button" , style="float: left;">Next
                         question</a>
                 {% endif %}
             {% else %}
-                {% if next_question == None and single_question == False %}
-                    <h3>{{ "No more questions left!" }}</h3>
-                    {% if is_correct %}
+                {% if next_question == None and single_question == False or 'None' in next_question and 'False' in single_question %}
+                    <h3 style="margin-bottom: 2em;">{{ "No more questions left!" }}</h3>
+                    {% if is_correct == True  or 'True' in is_correct%}
                         <h3>{{ "Correct answer!" }}</h3>
+                        <div class="container">
+                            <div class="column">
+                                <h4 style="margin-bottom: 2em;">{{ "Did you find the question particulary hard to answer?" }}
+                                </h4>
+                            </div>
+                            <div class="column">
+
+                                <form action="{% url 'questions:feedback' %}"
+                                      method="post">{% csrf_token %}
+                                    <input type="hidden" name="question" value="{{ question.id }}">
+                                    <input type="hidden" name="is_correct" value="{{ is_correct }}">
+                                    <input type="hidden" name="next_question" value="{{ next_question }}">
+                                    <input type="hidden" name="subject_id" value="{{ subject_id }}">
+                                    <input type="hidden" name="single_question" value="{{ single_question }}">
+                                    <button type="submit" class="{{ feedback_btn_status }}" {{ feedback_btn }}>Yes</button>
+                                </form>
+                            </div>
+                        </div>
                     {% endif %}
-                {% elif is_correct %}
-                    <h3>{{ "Correct answer!" }}</h3>
+                {% elif is_correct == True or 'True' in is_correct%}
+                    <h3 style="margin-bottom: 2em;">{{ "Correct answer!" }}</h3>
+                    <div class="container">
+                        <div class="column">
+                            <h4 style="margin-bottom: 2em;">{{ "Did you find the question particulary hard to answer?" }}
+                            </h4>
+                        </div>
+                        <div class="column">
+                            <form action="{% url 'questions:feedback' %}"
+                                  method="post">{% csrf_token %}
+                                <input type="hidden" name="question" value="{{ question.id }}">
+                                <input type="hidden" name="is_correct" value="{{ is_correct }}">
+                                <input type="hidden" name="next_question" value="{{ next_question }}">
+                                <input type="hidden" name="subject_id" value="{{ subject_id }}">
+                                <input type="hidden" name="single_question" value="{{ single_question }}">
+                                <button type="submit" class="{{feedback_btn_status}}" {{ feedback_btn }}>Yes</button>
+                            </form>
+                        </div>
+                    </div>
                 {% else %}
-                    <h3>{{ "Wrong answer!" }}</h3>
+                    <h3 style="margin-bottom: 2em;">{{ "Wrong answer!" }}</h3>
+                    <div class="container">
+                        <div class="column">
+                            <h4 style="margin-bottom: 2em;">{{ "Did you find the question particulary hard to answer?" }}
+                            </h4>
+                        </div>
+                        <div class="column">
+
+                            <form action="{% url 'questions:feedback' %}"
+                                  method="post">{% csrf_token %}
+                                <input type="hidden" name="question" value="{{ question.id }}">
+                                <input type="hidden" name="is_correct" value="{{ is_correct }}">
+                                <input type="hidden" name="next_question" value="{{ next_question }}">
+                                <input type="hidden" name="subject_id" value="{{ subject_id }}">
+                                <input type="hidden" name="single_question" value="{{ single_question }}">
+                                <button type="submit" class="{{ feedback_btn_status }}" {{ feedback_btn }}>{{ is_correct }}</button>
+                            </form>
+                        </div>
+                    </div>
                 {% endif %}
 
-                {% if next_question == None and single_question == False %}
-                    <a href="{% url 'questions:index' %}" class="btn btn-default" role="button">Go back</a>
-                {% elif single_question == True %}
-                    <a href="{% url 'questions:search' %}" class="btn btn-default" role="button">Go back</a>
+                {% if next_question == None and single_question == False or 'None' in next_question and 'False' in single_question  %}
+                    <a href="{% url 'questions:index' %}" class="btn btn-default" role="button" , style="float: left;">Go
+                        back</a>
+                {% elif single_question == True or 'True' in single_question %}
+                    <a href="{% url 'questions:search' %}" class="btn btn-default" role="button" , style="float: left;">Go
+                        back</a>
                 {% else %}
                     <a href="{% url 'questions:detail' subject_id next_question %}" class="btn btn-default"
-                       role="button">Next
+                       role="button" , style="float: left;">Next
                         question</a>
                 {% endif %}
             {% endif %}
         </div>
+
         </body>
     </div>
 {% endblock %}
