@@ -264,7 +264,7 @@ def answer(request, question_id, subject_id, single_question):
             if(answer.answer_attempt==haschapter.chapter_attempt):
                 error_iscorrect = "error " + str(isCorrect)
                 return render(request, 'questions/results.html',
-                              {'question': question, 'subject_id': subject_id, 'single_question': single_question, 'is_correct': error_iscorrect})
+                              {'question': question, 'subject_id': subject_id, 'single_question': single_question, 'is_correct': error_iscorrect, 'feedback_btn_status': 'btn btn-secondary', 'feedback_btn': ''})
             else:
                 answer.answer_attempt = answer.answer_attempt + 1
             answer.wasCorrect = isCorrect
