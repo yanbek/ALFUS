@@ -141,9 +141,10 @@ def profile(request):
 @login_required(login_url="/login/")
 def search(request):
     try:
+        all_topics = Question.objects.all()
         q = request.GET['q']
         topics = Question.objects.filter(topic_text__icontains=q)
-        return render_to_response('questions/search.html', {'topics': topics, 'q': q})
+        return render_to_response('questions/search.html', {'all_topics': all_topics,'topics': topics, 'q': q})
     except KeyError:
         return render_to_response('questions/search.html')
 
