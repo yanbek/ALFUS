@@ -28,7 +28,11 @@
     ================================================== -->
 
 
+    {% if question.question_image %}
+    <img src="{{ question.question_image.url }}">
+    {% else %}
     <h1 style="padding-bottom: 10px">{{ question.question_text }}</h1>
+    {% endif %}
 
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 

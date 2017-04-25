@@ -32,6 +32,11 @@ CRON_CLASSES = [
     # ...
 ]
 
+
+
+MEDIA_ROOT = BASE_DIR + '/static/images/questions/'
+MEDIA_URL = '/media/'
+
 # Application definition
 
 INSTALLED_APPS = [

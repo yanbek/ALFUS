@@ -14,7 +14,7 @@ class UrlsInLine(admin.TabularInline):
 
 class QuestionAdmin(admin.ModelAdmin):
     fieldsets = [
-      (None, {'fields': ['question_text', 'difficulty', 'chapter']}),
+      (None, {'fields': ['question_text', 'question_image', 'difficulty', 'chapter']}),
       ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
       ('topic_text', {'fields': ['topic_text'], 'classes': ['collapse']})
     ]

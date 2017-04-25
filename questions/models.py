@@ -40,6 +40,7 @@ class Question(models.Model):
     difficulty = models.FloatField(default=0.5)
     topic_text = models.CharField(max_length=200,default="x")
     chapter = models.ForeignKey(Chapter)
+    question_image = models.ImageField(upload_to = "static/images/questions",  blank=True, null=True)
 
     def __str__(self):
         return self.question_text
