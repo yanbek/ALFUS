@@ -53,10 +53,15 @@
                             <div class="col-xs-3">
                                 {{ chapter }}
                             </div>
-                            <div class="col-xs-2" style="left: 70px">
-                                <progress value={{ percent }} max="100"></progress>
+                            <div class="col-xs-3" style="left: 70px">
+                               <div class="progress">
+  <div class="progress-bar" role="progressbar" aria-valuenow="{{ percent }}"
+  aria-valuemin="0" aria-valuemax="100" style="width:{{ percent }}%">
+      {{ percent }}%
+  </div>
+</div>
                             </div>
-                            <div class="col-xs-4" style="left: 180px;text-align: center;">
+                            <div class="col-xs-2" style="left: 180px;text-align: center;">
                                 {{ grade }}
                             </div>
                         </div>
