@@ -32,7 +32,7 @@ def question_difficulty_number_to_text(number):
         return("Very Easy"), 'lime'
 
 def number_to_grade(number):
-    if number == 0.5:
+    if number == 0.5 or number == 0:
         return("Not enough information to grade yet")
     elif number >= 0.89:
         return("A")
@@ -57,14 +57,15 @@ def get_grade_subject(request):
         temp = 0
         for q in list(skillrating_chapters):
             if q.chapter.part_of == t:
-                print(q)
                 temp += q.skill_rating_chapter
                 count += 1
 
+            print("count")
+        print("---------------")
         if count == 0:
             count = 1
         subject_grade[t] = number_to_grade(temp / count)
-
+        print(subject_grade)
     return(subject_grade)
 
 
