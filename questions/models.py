@@ -43,7 +43,7 @@ class Question(models.Model):
     question_image = models.ImageField(upload_to = "static/images/questions",  blank=True, null=True)
 
     def __str__(self):
-        return self.question_text.encode('utf8')
+        return self.question_text
 
     def topic(self):
         return self.topic_text
