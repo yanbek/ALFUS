@@ -50,10 +50,10 @@ class UserLoginForm(forms.Form):
         password = self.cleaned_data.get("password")
         user = authenticate(username=username, password=password)
         if username and password:
-            if not user.check_password(password):
-                raise forms.ValidationError("Incorrect password.")
             if not user:
                 raise forms.ValidationError("Invalid username or password.")
+            if not user.check_password(password):
+                raise forms.ValidationError("Incorrect password.")
             if not user.is_active:
                 raise forms.ValidationError("This user is not longer active.")
         return super(UserLoginForm, self).clean(*args, **kwargs)
