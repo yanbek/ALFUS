@@ -221,9 +221,10 @@ def index_questions(request, subject_id):
         chapter.append(q)
 
     zipped = zip(chapter, percent, grades)
+    subject_grade = get_grade_subject(request)[subject_name]
 
     return render(request, 'questions/index_questions.html',
-                {'next_question_id': next_question_id, 'subject_id': subject_id, 'subject_name': subject_name, "chapters": zipped})
+                {'next_question_id': next_question_id, 'subject_id': subject_id, 'subject_name': subject_name, "chapters": zipped, 'subject_grade': subject_grade})
 
 
 @login_required(login_url="/login/")

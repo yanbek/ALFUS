@@ -25,7 +25,7 @@ SECRET_KEY = ')gjwk0+6(l)+@dznxi-f#@wek3*ou3)xzgjje)wf^zwn(a_&*j'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '138.68.180.101', 'alfus.me', 'www.alfus.me']
+ALLOWED_HOSTS = ['127.0.0.1', '188.166.149.115', 'alfus.me', 'www.alfus.me']
 
 CRON_CLASSES = [
     "questions.cron.Difficulty_adjustment",

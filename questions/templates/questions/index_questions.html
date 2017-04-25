@@ -49,24 +49,31 @@
 
                 {% for chapter, percent, grade in chapters %}
                     <li class="list-group-item">
-                    <div class="row">
-                        <div class="col-xs-1">
-                            {{ chapter }}
+                        <div class="row">
+                            <div class="col-xs-1">
+                                {{ chapter }}
+                            </div>
+                            <div class="col-xs-2" style="left: 70px">
+                                <progress value={{ percent }} max="1"></progress>
+                            </div>
+                            <div class="col-xs-4" style="left: 180px;text-align: center;">
+                                {{ grade }}
+                            </div>
                         </div>
-                        <div class="col-xs-2" style="left: 70px">
-                            <progress value={{ percent }} max="1"></progress>
-                        </div>
-                        <div class="col-xs-4" style="left: 180px;text-align: center;">
-                            {{ grade }}
-                        </div>
-                    </div>
+                    </li>
                 {% endfor %}
             </ul>
         {% else %}
             <p>No courses are available.</p>
         {% endif %}
     </div>
-    <div style="padding-top: 30px">
+
+    <li class="list-group-item" div style="top: 20px;display: inline;word-break:break-all;">
+                Estimated subject grade: {{ subject_grade }}
+    </li>
+
+
+    <div style="padding-top: 40px">
         <a href="{% url 'questions:detail' subject_id next_question_id %}" class="btn btn-default"
            role="button">Start Test</a>
     </div>
