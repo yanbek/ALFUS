@@ -217,9 +217,9 @@ def index_questions(request, subject_id):
         if qSet:
             grades.append(number_to_grade(qSet[0].skill_rating_chapter))
 
-        percent.append(round((questions_in_subject_answered[q] / questions_in_subject[q])*100))
+        percent.append(int((questions_in_subject_answered[q] / questions_in_subject[q])*100))
 
-        chapter.append(q)
+    chapter.append(q)
     zipped = zip(chapter, percent, grades)
     subject_grade = get_grade_subject(request)[subject_name]
 
