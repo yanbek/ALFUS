@@ -13,7 +13,7 @@
         .questionprogresstextstyle {
             float: left;
             position: relative;
-            left: 80px
+            left: 140px
         }
     </style>
 
@@ -36,7 +36,7 @@
                 {% for subject, subject_answered, count in subject_list %}
                     <li class="list-group-item">
                     <div class="row">
-                        <div class="col-xs-2" >
+                        <div class="col-xs-4" >
                             <a href="{% url 'questions:index_questions' subject.id %}">{{ subject }}</a>
                         </div>
                     <div class="col-xs-4" style="left: 110px">
