@@ -88,3 +88,9 @@ class ViewTest(TestCase):
         self.client.post(reverse("questions:answer", args=[1, 1]), {"choice" : 1})
         response = self.client.get(reverse("questions:answer", args=[1, 1]))
         self.assertEqual(response.status_code, 200)
+
+    def test_change_password(self):
+        self.client.login(username='user1', password='password')
+        response = self.client.get(reverse("questions:change_password"))
+        self.assertEqual(response.status_code, 200)
+
