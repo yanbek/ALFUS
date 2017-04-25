@@ -1,6 +1,7 @@
 html, body {
   height: 100%;
   margin: 0;
+    padding: 0;
 }
 
 .container {
@@ -12,4 +13,6 @@ nav#tf-footer {
 	padding: 3% 0 2% 0;
 	color: #f1f1f1;
     height: 9%;
+    left: 0;
+    right: 0;
 }
