@@ -9,6 +9,20 @@
             padding-left: 20px
         }
     </style>
+     <style type="text/css">
+        .current {
+            float: left;
+            position: relative;
+            left: 0px
+        }
+    </style>
+     <style type="text/css">
+        .estimate {
+            float: left;
+            position: relative;
+            left: 150px
+        }
+    </style>
     <h1 style="top: 20px;position: relative">Profile</h1>
     <br>
     <div class="container">
@@ -26,14 +40,17 @@
 
                                 <div>
                                     <div style="position: relative; left:19px">
+                                        <div class="container">
+                                            <h4 class="current">Current</h4>
+                                            <h4 class="estimate">Estimated grades</h4>
+                                        </div>
                                         <ul class="list-group"
-                                            style=" width: 360px;table-layout: fixed; padding-top: 10px;padding-right: 10px">
-                                            <h4>Current estimated grades</h4>
+                                            style=" width: 500px;table-layout: fixed; padding-top: 10px;padding-right: 10px">
 
                                             {% for chapter, grade in skills %}
                                                 <li class="list-group-item">
                                                     <div class="row">
-                                                        <div class="col-xs-2">
+                                                        <div class="col-xs-5">
                                                             {{ chapter }}:
                                                         </div>
                                                         <div class="hideextra">
