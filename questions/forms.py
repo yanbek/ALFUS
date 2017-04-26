@@ -4,11 +4,13 @@ from django.contrib.auth.forms import UserChangeForm
 from django.forms import TextInput
 
 
+#Form for answers
 class AnswerForm(forms.Form):
     def __init__(self, question, answer):
         self.question = question
         self.answer = answer
-        
+
+#Form for changing email
 class ChangeEmailForm(UserChangeForm):
 
     def __init__(self, *args, **kwargs):

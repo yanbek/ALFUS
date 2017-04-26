@@ -10,6 +10,7 @@ def index(request):
 
 
 #Login page, loges the user in if the form is valid
+#Returns a render function of the login page
 def login_view(request):
     title = "Login"
     form = UserLoginForm(request.POST or None)
@@ -26,17 +27,20 @@ def login_view(request):
 
 
 #Logout
+#Returns a render function of the home page
 def logout_view(request):
     logout(request)
     return render(request, "personal/home.html")
 
 
 #Login link for forgot password
+#Returns a render function of the login page
 def go_login_view(request):
     return redirect("login")
 
 
 #Registration page. Make new user if the form is valid
+#Returns a render function of the registration page
 def register_view(request):
     title = "Register"
     form = UserRegisterForm(request.POST or None)

@@ -136,7 +136,7 @@ def change_password(request):
 
 
 # Profile page and code for constructing the profile page
-# Returns a a render function for the profile template
+# Returns a render function for the profile template
 @login_required(login_url="/login/")
 def profile(request):
     temp = get_grade_subject(request)
@@ -168,7 +168,7 @@ def search(request):
 # Returns a render for courses
 @login_required(login_url="/login/")
 def index(request):
-    zipped = get_chapters(request)
+    zipped = get_questions_done_subject(request)
     return render(request, 'questions/index.html', {'subject_list': zipped})
 
 
@@ -422,22 +422,26 @@ def get_next_question(request, subject_id):
     return next_question_id
 
 
+#Gets the number of questions a user has done in a subject, the total number of questions in a subject and the subject
+#Starts with finding which questions a user has done in each chapter. Then it links all the chapters together with the subject
 @login_required(login_url="/login/")
-def get_chapters(request):
+def get_questions_done_subject(request):
     questions_chapter = {}
     questions_chapter_answered = {}
     questions_in_subject = {}
     questions_in_subject_answered = {}
     current_user = request.user
     questions_by_user = hasAnswered.objects.all().filter(submitted_by=current_user, wasCorrect=True)
+    #Gets number of questions done in each chapter
     for i in Chapter.objects.all():
         questions_chapter_answered[i] = 0
         questions = Question.objects.filter(chapter=i)
         questions_chapter[i] = len(questions)
-
         for s in list(questions_by_user):
             if s.submitted_answer.chapter == i:
                 questions_chapter_answered[i] += 1
+
+    #Gets number of questions done in each subject
     for t in Subject.objects.all():
         questions_in_subject[t] = 0
         questions_in_subject_answered[t] = 0
@@ -448,6 +452,8 @@ def get_chapters(request):
         for chapter in questions_chapter_answered.keys():
             if chapter.part_of == t:
                 questions_in_subject_answered[t] += questions_chapter_answered[chapter]
+
+    #Make a zip consisting of subject names, questions done in subjects and total number of questions in each subject
     subject = []
     subject_answered = []
     count = []
