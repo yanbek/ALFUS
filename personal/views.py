@@ -42,7 +42,7 @@ def register_view(request):
         user.save()
         new_user = authenticate(username=user.username, password=password)
         login(request, new_user)
-        return render(request, "registration/registration_complete.html")
+        return render(request, "registration_complete/registration_complete.html")
 
     context = {"form": form, "title": title}
     return render(request, "personal/form.html", context)
