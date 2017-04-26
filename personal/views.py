@@ -31,6 +31,8 @@ def logout_view(request):
     logout(request)
     return render(request, "personal/home.html")
 
+def go_login_view(request):
+    return redirect("login")
 
 def register_view(request):
     title = "Register"
