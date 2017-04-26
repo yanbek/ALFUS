@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.sessions.models import Session
+from django.utils import timezone
 
 from .models import *
 

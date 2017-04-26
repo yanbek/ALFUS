@@ -1,4 +1,6 @@
 from django.test import TestCase
+from django.utils import timezone
+
 from .cron import Difficulty_adjustment as DA
 from .models import *
 from django.contrib.auth.models import User
