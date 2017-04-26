@@ -96,6 +96,7 @@ class ViewTest(TestCase):
 
     def test_get_grade_subject(self):
         self.client.login(username='user0', password='password')
+
         # Make subjects and chapters
         for i in range(1, 6):
             s = Subject(name="Test subject #"+str(i))
