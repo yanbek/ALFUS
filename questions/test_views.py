@@ -94,3 +94,18 @@ class ViewTest(TestCase):
         response = self.client.get(reverse("questions:change_password"))
         self.assertEqual(response.status_code, 200)
 
+    def test_get_grade_subject(self):
+        self.client.login(username='user0', password='password')
+
+        # Make subjects and chapters
+        for i in range(1, 6):
+            s = Subject(name="Test subject #"+str(i))
+            s.save()
+            c = Chapter(name="Test chapter #"+str(i), part_of=s)
+            c.save()
+            h = hasChapter(skill_rating_chapter=1.0-0.1*i, user=self.users[0], chapter=c)
+            h.save()
+            response = self.client.get(reverse("questions:index_questions", args=[s.id]))
+            self.assertEqual(response.status_code, 200)
+
+

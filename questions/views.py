@@ -60,8 +60,6 @@ def get_grade_subject(request):
                 temp += q.skill_rating_chapter
                 count += 1
 
-            print("count")
-        print("---------------")
         if count == 0:
             count = 1
         subject_grade[t] = number_to_grade(temp / count)
