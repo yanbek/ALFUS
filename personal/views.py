@@ -4,9 +4,12 @@ from .forms import UserRegisterForm
 from .forms import UserLoginForm
 
 
+#Get home page
 def index(request):
     return render(request, 'personal/home.html')
 
+
+#Login page, loges the user in if the form is valid
 def login_view(request):
     title = "Login"
     form = UserLoginForm(request.POST or None)
@@ -22,13 +25,18 @@ def login_view(request):
     return render(request, "personal/loginForm.html", {"form": form, "title": title})
 
 
+#Logout
 def logout_view(request):
     logout(request)
     return render(request, "personal/home.html")
 
+
+#Login link for forgot password
 def go_login_view(request):
     return redirect("login")
 
+
+#Registration page. Make new user if the form is valid
 def register_view(request):
     title = "Register"
     form = UserRegisterForm(request.POST or None)

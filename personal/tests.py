@@ -1,9 +1,8 @@
-
 from django.urls import reverse
 from django.test import TestCase
 import personal.forms as forms
-
 from django.contrib.auth.models import User
+
 
 class PersonalTest(TestCase):
 
@@ -43,7 +42,6 @@ class PersonalTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_registration_form_valid(self):
-        #"username", "first_name", "last_name", "email", "password1", "password2"
         form_data = {"username": "Auser", "first_name": "ghj", "last_name": "cv", "email": "ads@asd.no",
                      "password1": "averystrongpassword", "password2": "averystrongpassword"}
         form = forms.UserRegisterForm(data=form_data)

@@ -1,10 +1,9 @@
 from django import forms
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth import authenticate
 
 
-
-
+#Form for user registration
 class UserRegisterForm(forms.ModelForm):
     username = forms.CharField(label="Choose your username", max_length=64, widget=forms.TextInput(
         attrs={'class': 'form-control', 'style': 'text-align:center'}))
@@ -33,9 +32,7 @@ class UserRegisterForm(forms.ModelForm):
 
         return self.cleaned_data
 
-User = get_user_model()
-
-
+#Form for user login
 class UserLoginForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(
         attrs={'style': 'text-align:center'}))

@@ -19,7 +19,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = ')gjwk0+6(l)+@dznxi-f#@wek3*ou3)xzgjje)wf^zwn(a_&*j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -32,8 +31,7 @@ CRON_CLASSES = [
     # ...
 ]
 
-
-
+#Image upload
 MEDIA_ROOT = BASE_DIR + '/static/images/questions/'
 MEDIA_URL = '/media/'
 
@@ -62,6 +60,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+#Email for forgot password
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'alfustest@gmail.com'
@@ -96,7 +95,6 @@ WSGI_APPLICATION = 'ALFUS.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
