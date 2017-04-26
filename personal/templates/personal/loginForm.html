@@ -2,9 +2,9 @@
 {% load crispy_forms_tags %}
 
 {% block content%}
-<div class="panel panel-default", style="width: 55%; margin: auto;">
+<div class="panel panel-default", style="width: 60%; margin: auto;">
       <div class="panel-heading">{{ title }}</div>
-<form method="post" action="" enctype="multipart/form-data">
+<form method="post" action="" enctype="multipart/form-data" style="width: 55%; margin: auto;">
     {% csrf_token %}
         {{ form|crispy }}
     <input type="submit" class="btn btn-default" value="{{ title }}"/>
