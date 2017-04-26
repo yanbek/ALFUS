@@ -14,7 +14,7 @@
         </style>
         <style type="text/css">
             .questiontextstyle {
-                padding-left: 190px
+                padding-left: 230px
             }
         </style>
         <h1 style="top: 20px;position: relative;padding-bottom: 40px"> Search </h1>
@@ -39,10 +39,10 @@
                     {% for question in topics %}
                         <li class="list-group-item">
                             <div class="row">
-                                <div class="col-xs-2">
+                                <div class="col-xs-3">
                                     {{ question.topic_text }}
                                 </div>
-                                <div class="col-xs-4" style="left: 130px">
+                                <div class="col-xs-5" style="left: 130px">
                                     &emsp; <a
                                         href="{% url 'questions:detail' question.chapter_id question.id 'S' %}">{{ question.question_text }}</a>
                                 </div>
