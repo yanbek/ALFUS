@@ -1,21 +1,14 @@
-from django.utils import timezone
 from django.shortcuts import get_object_or_404, render, redirect, render_to_response, HttpResponseRedirect
 from django.http import Http404
 from .models import Choice, Question, hasAnswered, hasChapter, Chapter, Subject
 from collections import defaultdict
-from django.db.models import Max
-from django.utils import timezone
 import math
-from random import randint
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from .forms import ChangeEmailForm
 from django.db.models import Q, F
-from itertools import chain
 from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
-from django.http import HttpResponse
-from itertools import chain
 
 
 

@@ -27,7 +27,7 @@ class PersonalTest(TestCase):
         response = self.client.post(reverse("login"), form_data)
         self.assertEqual(response.status_code, 302)
 
-    def test_loguot_view(self):
+    def test_logout_view(self):
         response = self.client.get(reverse("logout"))
         self.assertEqual(response.status_code, 200)
 
@@ -49,3 +49,8 @@ class PersonalTest(TestCase):
         form = forms.UserRegisterForm(data=form_data)
         self.assertTrue(form.is_valid())
 
+    def test_registration_form_invalid(self):
+        form_data = {"username": "Auser", "first_name": "ghj", "last_name": "cv", "email": "ads@asd.no",
+                     "password1": "averystrongpassword", "password2": "av"}
+        form = forms.UserRegisterForm(data=form_data)
+        self.assertFalse(form.is_valid())

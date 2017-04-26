@@ -7,11 +7,6 @@ from .forms import UserLoginForm
 def index(request):
     return render(request, 'personal/home.html')
 
-
-def contact(request):
-    return render(request, 'personal/basic.html', {'content': ['Test']})
-
-
 def login_view(request):
     title = "Login"
     form = UserLoginForm(request.POST or None)
