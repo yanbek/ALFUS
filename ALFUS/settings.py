@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = ')gjwk0+6(l)+@dznxi-f#@wek3*ou3)xzgjje)wf^zwn(a_&*j'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '138.68.159.2', 'alfus.me', 'www.alfus.me']
 
