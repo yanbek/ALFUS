@@ -28,4 +28,3 @@ admin.site.register(Question, QuestionAdmin)
 admin.site.register(Subject)
 admin.site.register(Chapter)
 
-# admin.site.site_header = "Polls Administration"

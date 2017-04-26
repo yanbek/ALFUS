@@ -10,9 +10,9 @@ class Difficulty_adjustment(CronJobBase):
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'cron.Difficulty_adjustment'
 
+    # Updates the difficulty weight of each question according to prior answers.
     def do(self):
 
-        # Difficulty weight of each question is adjusted according to prior scoring.
         question_dict = defaultdict(list)
 
         try:

@@ -20,9 +20,7 @@
     <h1 style="top: 20px;position: relative"> Courses</h1>
 
     <div class="container">
-
-        <!-- Kun til testing. Bør fjernes/byttes ut senere.
-        ================================================== -->
+ -->
         <div style="top: 20px;position: relative">
             <h4 class="subjecttextstyle"> Subject </h4>
             <h4 class="questionprogresstextstyle"> Questions done </h4>
@@ -31,7 +29,6 @@
 
     <div style="padding-top: 20px;">
         {% if subject_list %}
-            <!-- Inside index.html -->
             <ul class="list-group" style=" width: 360px;table-layout: fixed;">
                 {% for subject, subject_answered, count in subject_list %}
                     <li class="list-group-item">

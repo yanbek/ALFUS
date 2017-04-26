@@ -62,6 +62,9 @@ def get_grade_subject(request):
     return(subject_grade)
 
 
+# Updates the firstWasCorrect attribute in the hasAnswer object to False, which will increase the question difficulty
+# Called on when user answers Yes to "Did you find the question particulary hard to answer?"
+# Returns a render function that refreshes the page
 @login_required(login_url="/login/")
 def feedback(request):
 
@@ -72,6 +75,8 @@ def feedback(request):
                   {'question': request.POST.get('question'), 'is_correct': request.POST.get('is_correct'),
                    'next_question': request.POST.get('next_question'), 'subject_id': request.POST.get('subject_id'), 'single_question': request.POST.get('single_question'), 'feedback_btn_status': 'btn btn-primary', 'feedback_btn': 'disabled'})
 
+# Resets all the questions done by setting wasCorrect in hasAnswer to False
+# Resets also the users' skill rating by setting to the default value.
 @login_required(login_url="/login/")
 def reset(request):
     all_hasAnswer = hasAnswered.objects.filter(submitted_by=request.user)
@@ -81,7 +86,8 @@ def reset(request):
     all_skill.update(skill_rating_chapter=0.5)
     return redirect("/questions/profile")
 
-
+# Validates the change email input  (using the ChangeEmailForm class)
+# Updates the user email if input is valid
 @login_required(login_url="/login/")
 def change_email(request):
     if request.method == 'POST':
@@ -98,7 +104,7 @@ def change_email(request):
         args = {'form': form}
         return render(request, 'questions/change_email.html', args)
 
-
+# Deletes the user when called on
 @login_required(login_url="/login/")
 def del_user(request):
     try:
@@ -113,6 +119,8 @@ def del_user(request):
         return render(request, 'questions/not_deleted.html')
 
 
+# Validates the change password input (using Django validation method for passwords)
+# Updates the user password if input is valid
 @login_required(login_url="/login/")
 def change_password(request):
     if request.method == 'POST':
@@ -127,7 +135,8 @@ def change_password(request):
     return render(request, 'questions/change_password.html', {"form": form})
 
 
-#Profile page and code for constructing the profile page
+# Profile page and code for constructing the profile page
+# Returns a a render function for the profile template
 @login_required(login_url="/login/")
 def profile(request):
     temp = get_grade_subject(request)
@@ -143,7 +152,8 @@ def profile(request):
 
     return render(request, 'questions/profile.html', {"skills": zipped})
 
-
+# Called on when clicking the search button
+# Returns a render function for search template with a list of questions based on input text in the search field
 @login_required(login_url="/login/")
 def search(request):
     try:
@@ -154,14 +164,16 @@ def search(request):
     except KeyError:
         return render_to_response('questions/search.html')
 
-
+# Called on when clicking the home button
+# Returns a render for courses
 @login_required(login_url="/login/")
 def index(request):
     zipped = get_chapters(request)
     return render(request, 'questions/index.html', {'subject_list': zipped})
 
 
-#Render info for subject
+# Called on when clicking on a subject in the courses list.
+# Returns a render function for chapters template a given subject
 @login_required(login_url="/login/")
 def index_questions(request, subject_id):
     question_list = Question.objects.filter(chapter__part_of_id=subject_id)
@@ -174,7 +186,7 @@ def index_questions(request, subject_id):
 
     next_question_id = get_next_question(request, subject_id)
 
-    #Calculates hapter info
+    #Calculates chapter info
     questions_chapter = {}
     questions_chapter_answered = {}
     questions_in_subject = {}
@@ -223,6 +235,10 @@ def index_questions(request, subject_id):
                 {'next_question_id': next_question_id, 'subject_id': subject_id, 'subject_name': subject_name, "chapters": zipped, 'subject_grade': subject_grade})
 
 
+
+# Extracts (and calculates) the relevant information from the database to be used in the question template
+# Called on when user starts a test or goes to next question
+# Returns a render function for question template
 @login_required(login_url="/login/")
 def detail(request, question_id, subject_id, single_question):
     try:
@@ -255,16 +271,28 @@ def detail(request, question_id, subject_id, single_question):
                   "grade": grade, "subject_grade": subject_grade, 'question_difficulty': question_difficulty, 'question_difficulty_color' : question_difficulty_color})
 
 
+# Called on when a user answers a question
+# Checks if the user answer is correct
+# Updates the hasAnswer object and user skill rating based on the answer (if correct or not)
+# Finds next relevant question
+# Returns a render function for result template
 @login_required(login_url="/login/")
 def answer(request, question_id, subject_id, single_question):
+
+    # Weight adjustment decides how much the answer should influence the skill rating adjustment
+    # Clip threshold hinders the skill rating to get in the tail regions of the logistic function that is used for the skill rating adjustment
+    weight_adjustment = 0.4
+    clip_threshold = 2.5
+
     question = get_object_or_404(Question, pk=question_id)
     try:
+
+        # Used to stop the test when there is no more questions left to answer.
         if (single_question == 'S'):
             single_question = True
         else:
             single_question = False
 
-        # Save answer
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
         isCorrect = selected_choice.correct
         # If already answered this question, modify old answer, else create new
@@ -273,6 +301,7 @@ def answer(request, question_id, subject_id, single_question):
         else:
             answer = hasAnswered.objects.get(submitted_by=request.user, submitted_answer=question)
             haschapter = hasChapter.objects.get(user=request.user, chapter=question.chapter)
+            # A security measure that restricts user from answering already answered question (e.g. using/"exploiting" back button in browser)
             if(answer.answer_attempt==haschapter.chapter_attempt):
                 error_iscorrect = "error " + str(isCorrect)
                 return render(request, 'questions/results.html',
@@ -280,43 +309,33 @@ def answer(request, question_id, subject_id, single_question):
             else:
                 answer.answer_attempt = answer.answer_attempt + 1
             answer.wasCorrect = isCorrect
+        # Save the new answer
         answer.save()
 
         user_hasChapter_current = hasChapter.objects.get(user=request.user, chapter=question.chapter_id)
 
-        '''
-        # Find new chapter skill rating. The rating is calculated by the formula  total correct answer / total answer
-        prior_user_answers_to_current_chapter = hasAnswered.objects.filter(submitted_by=request.user,
-                                                                           submitted_answer__chapter=question.chapter_id)
-        answer_list = []
-
-        for prior_answer in prior_user_answers_to_current_chapter:
-            answer_list.append(prior_answer.wasCorrect)
-        total_answers = len(answer_list)
-        correct_answers = sum(answer_list)
-
-        updated_skill_rating = float(correct_answers) / float(total_answers)
-        '''
-
-        weight = 0.4
+        # Calculate the skill rating adjustment for the chapter (given question just answered)
         if isCorrect:
             adjustment = question.difficulty - user_hasChapter_current.skill_rating_chapter + 1
 
         else:
             adjustment = question.difficulty - user_hasChapter_current.skill_rating_chapter - 1
-        # Adjusting with logistic function (squashing function)
         inverse_log_fun_current_rating = -math.log(1 / user_hasChapter_current.skill_rating_chapter - 1)
 
-        if inverse_log_fun_current_rating < -2.5:
-            inverse_log_fun_current_rating = -2.5
-        elif inverse_log_fun_current_rating > 2.5:
-            inverse_log_fun_current_rating = 2.5
+        # Restrict the skill rating from getting lost in the tail regions of a logistic function
+        if inverse_log_fun_current_rating < -clip_threshold:
+            inverse_log_fun_current_rating = -clip_threshold
+        elif inverse_log_fun_current_rating > clip_threshold:
+            inverse_log_fun_current_rating = clip_threshold
 
-        new_rating = 1 / (1 + math.exp(-(adjustment * weight + inverse_log_fun_current_rating)))
+        # Use logistic function (squashing function)
+        new_rating = 1 / (1 + math.exp(-(adjustment * weight_adjustment + inverse_log_fun_current_rating)))
 
+        # Update and save skill rating
         user_hasChapter_current.skill_rating_chapter = new_rating
         user_hasChapter_current.save()
 
+        # Find next relevant question
         next_question_id = get_next_question(request, subject_id)
 
 
@@ -334,17 +353,24 @@ def answer(request, question_id, subject_id, single_question):
                           {'question': question, 'is_correct': selected_choice.correct,
                            'next_question': next_question_id, 'subject_id': subject_id, 'single_question': single_question, 'feedback_btn_status': 'btn btn-secondary', 'feedback_btn': ''})
 
-
+# Finds the next relevant question given subject and user
+# Get next question by selecting an unanswered question that match the current skill rating.
+# Prioritize chapters with lower skill rating.
+# The question that gives the lowest delta is the winner.
+# Returns the subject id of the most relevant question
 @login_required(login_url="/login/")
 def get_next_question(request, subject_id):
-    # Get next question by selecting an unanswered question that match the current skill rating.
-    # Prioritize chapters with lower skill rating.
-    # The question that gives the lowest delta is the winner.
-    question_dict = request.session['question_dict']
+
+    # Chapter priority decides how chapters with lower skill rating should influences selection of next question.
+    # Boundary reset chapter restricts the algorithm from giving a user with low skill rating a hard/very hard question
     chapter_priority = 1
     boundary_reset_chapter = 0.5
+
+
+    question_dict = request.session['question_dict']
     search_new_question_attempt = 0
     while search_new_question_attempt < 2:
+        # Question that gives the lowest delta win (and have not been answered correctly before)
         delta = 1.0
         next_question_id = None
         next_question_difficulty = None
@@ -358,6 +384,7 @@ def get_next_question(request, subject_id):
             skill_rating_chapter = hasChapter.objects.values_list('skill_rating_chapter', flat=True).get(
                 user=request.user, chapter=chapter)
             # Iterate over the chapter list and see if there is any unanswered question that gives us a lower delta.
+            # Also checks number of question attempts to stop the algorithm from keep giving the same questions over again
             haschapter = hasChapter.objects.get(user=request.user, chapter=chapter)
             for question_to_be_checked in question_dict[chapter]:
                 new_delta = math.fabs(question_to_be_checked[1] - skill_rating_chapter) * (
@@ -372,16 +399,19 @@ def get_next_question(request, subject_id):
                     next_question_difficulty = question_to_be_checked[1]
                     next_chapter_difficulty = skill_rating_chapter
                     next_haschapter = haschapter
+
         if next_question_id is None:
 
             if (not hasAnswered.objects.filter(Q(submitted_by=request.user) & Q(wasCorrect=False) & Q(submitted_answer__chapter__part_of=subject_id)).exists()):
-                #zipped = get_chapters(request)
-                #return render(request, 'questions/index.html', {'subject_list': zipped})
+                # No question found, returns None
                 return next_question_id
             else:
+                # Iterated over all the relevant wrongly answered questions
+                # Increases the "allowed attempt counter" so questions can given to the user again by the algorithm
                 all_haschapters = hasChapter.objects.filter(user=request.user)
                 all_haschapters.update(chapter_attempt=F('chapter_attempt') + 1)
-        # Reset chapter questions if the users' skill rating is too low for the remaining questions (e.g failed on all the easy questions and only the hard questions remains in the question pool).
+        # Users' skill rating is too low for the remaining questions (e.g failed on all the easy questions and only the hard questions remains in the question pool).
+        # Increase "allowed attempt counter" so the easy questions can be given to user again by the algorithm
         elif abs(
                         next_question_difficulty - next_chapter_difficulty) > boundary_reset_chapter and search_new_question_attempt < 1:
             next_haschapter.chapter_attempt += 1
@@ -427,10 +457,13 @@ def get_chapters(request):
         count.append(questions_in_subject[q])
     return zip(subject, subject_answered, count)
 
-
+# Called on when user clicks the reset button the profile page
+# Resets all the answers by setting wasCorrect = False and answer_attempt = 1 (default values)
+# (FirstWasCorrect is not set to false since we only want the users' first answer to influence the question difficulty)
+# Skill rating for all the chapters is also set to default value 0.5
+# Return a HTTP response that refreshes the profile page
 @login_required(login_url="/login/")
 def reset(request):
-    # Reset all questions
     all_hasAnswer = hasAnswered.objects.filter(submitted_by=request.user)
     all_hasChapter = hasChapter.objects.filter(user=request.user)
     all_hasAnswer.update(wasCorrect=False)
