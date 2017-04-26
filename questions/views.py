@@ -63,7 +63,6 @@ def get_grade_subject(request):
         if count == 0:
             count = 1
         subject_grade[t] = number_to_grade(temp / count)
-        print(subject_grade)
     return(subject_grade)
 
 

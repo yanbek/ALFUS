@@ -98,7 +98,7 @@ class ViewTest(TestCase):
         self.client.login(username='user0', password='password')
 
         # Make subjects and chapters
-        for i in range(1, 6):
+        for i in range(1, 10):
             s = Subject(name="Test subject #"+str(i))
             s.save()
             c = Chapter(name="Test chapter #"+str(i), part_of=s)
@@ -108,4 +108,13 @@ class ViewTest(TestCase):
             response = self.client.get(reverse("questions:index_questions", args=[s.id]))
             self.assertEqual(response.status_code, 200)
 
+    def test_profile(self):
+        self.client.login(username='user1', password='password')
+        response = self.client.get(reverse("questions:profile"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_reset(self):
+        self.client.login(username='user10', password='password')
+        response = self.client.get(reverse("questions:reset"))
+        self.assertEqual(response.status_code, 302)
 
