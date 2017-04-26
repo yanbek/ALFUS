@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import signals
 
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
 
@@ -16,11 +17,13 @@ class UserProfile(models.Model):
         UserProfile.objects.create(user=instance)
     signals.post_save.connect(create_profile, sender=User)
 
+
 class Subject(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self):
         return self.name
+
 
 class Chapter(models.Model):
     name = models.CharField(max_length=200)
@@ -29,6 +32,7 @@ class Chapter(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Question(models.Model):
     question_text = models.CharField(max_length=700)
@@ -59,7 +63,8 @@ class Choice(models.Model):
 
     def __str__(self):
         return self.choice_text
-    
+
+
 class Urls(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     help_links = models.URLField(max_length=400)
@@ -79,6 +84,7 @@ class hasAnswered(models.Model):
     answer_attempt = models.IntegerField(default=1)
     submitted_by = models.ForeignKey(User)
     submitted_answer = models.ForeignKey(Question)
+
 
 # A table for the relationship between user and chapter
 class hasChapter(models.Model):

@@ -1,12 +1,12 @@
 from django.contrib import admin
-
 from .models import Choice, Question, Subject, Chapter, Urls
 
 
 class ChoiceInline(admin.TabularInline):
     model = Choice
     extra = 3
-    
+
+
 class UrlsInLine(admin.TabularInline):
     model = Urls
     extra = 2

@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import PasswordChangeForm
 
 
-
+#Converts question difficulty in decimal to text
 def question_difficulty_number_to_text(number):
     if number >= 0.85:
         return("Very hard"), 'red'
@@ -24,6 +24,8 @@ def question_difficulty_number_to_text(number):
     else:
         return("Very Easy"), 'lime'
 
+
+#Convert skill level in decimal to grade in letter
 def number_to_grade(number):
     if number == 0.5 or number == 0:
         return("Not enough information to grade yet")
@@ -41,6 +43,7 @@ def number_to_grade(number):
         return("F")
 
 
+#Get grade for each subjects. Returns grades for each subject as dictionary key=subject content=grade
 def get_grade_subject(request):
     skillrating_chapters = hasChapter.objects.filter(user=request.user)
     subject_grade = {}
@@ -110,7 +113,6 @@ def del_user(request):
         return render(request, 'questions/not_deleted.html')
 
 
-
 @login_required(login_url="/login/")
 def change_password(request):
     if request.method == 'POST':
@@ -125,6 +127,7 @@ def change_password(request):
     return render(request, 'questions/change_password.html', {"form": form})
 
 
+#Profile page and code for constructing the profile page
 @login_required(login_url="/login/")
 def profile(request):
     temp = get_grade_subject(request)
@@ -139,6 +142,7 @@ def profile(request):
     zipped = zip(subject, grades_letter)
 
     return render(request, 'questions/profile.html', {"skills": zipped})
+
 
 @login_required(login_url="/login/")
 def search(request):
@@ -157,6 +161,7 @@ def index(request):
     return render(request, 'questions/index.html', {'subject_list': zipped})
 
 
+#Render info for subject
 @login_required(login_url="/login/")
 def index_questions(request, subject_id):
     question_list = Question.objects.filter(chapter__part_of_id=subject_id)
@@ -169,7 +174,7 @@ def index_questions(request, subject_id):
 
     next_question_id = get_next_question(request, subject_id)
 
-    #Chapter info
+    #Calculates hapter info
     questions_chapter = {}
     questions_chapter_answered = {}
     questions_in_subject = {}
@@ -330,7 +335,6 @@ def answer(request, question_id, subject_id, single_question):
                            'next_question': next_question_id, 'subject_id': subject_id, 'single_question': single_question, 'feedback_btn_status': 'btn btn-secondary', 'feedback_btn': ''})
 
 
-
 @login_required(login_url="/login/")
 def get_next_question(request, subject_id):
     # Get next question by selecting an unanswered question that match the current skill rating.
@@ -388,7 +392,6 @@ def get_next_question(request, subject_id):
     return next_question_id
 
 
-
 @login_required(login_url="/login/")
 def get_chapters(request):
     questions_chapter = {}
@@ -423,6 +426,7 @@ def get_chapters(request):
         subject_answered.append(questions_in_subject_answered[q])
         count.append(questions_in_subject[q])
     return zip(subject, subject_answered, count)
+
 
 @login_required(login_url="/login/")
 def reset(request):

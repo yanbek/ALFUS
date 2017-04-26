@@ -3,6 +3,7 @@ from .models import hasAnswered, Question
 from collections import defaultdict
 from django.conf import settings
 
+
 class Difficulty_adjustment(CronJobBase):
     RUN_EVERY_MINS = 0 if settings.DEBUG else 360
 

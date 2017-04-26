@@ -1,12 +1,11 @@
 from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
-
 from .models import *
 from django.contrib.auth.models import User
 
-class QuestionModelsTest(TestCase):
 
+class QuestionModelsTest(TestCase):
 
     def setUp(self):
         self.do_print = False
@@ -52,10 +51,6 @@ class QuestionModelsTest(TestCase):
         # Make relationship between user and questions
         pass
 
-
-
-
-
     def test_question_added(self):
         # Test that the questions are in the database
         self.assertTrue(self.q1 in Question.objects.all())
@@ -70,7 +65,6 @@ class QuestionModelsTest(TestCase):
             self.assertEqual(self.q1, i.question)
         for i in Choice.objects.filter(question_id=self.q2.pk):
             self.assertEqual(self.q2, i.question)
-
 
     def test_choice_cascade(self):
         # Creating question and choices
@@ -91,7 +85,6 @@ class QuestionModelsTest(TestCase):
         query_result = Choice.objects.filter(question_id=self.q2.pk)
         self.assertTrue(len(query_result) == 5)
         if self.do_print: print("Query 2: " + str(query_result))
-
 
         if self.do_print: print("Questions", Question.objects.all())
         if self.do_print: print("Choices to question1", Choice.objects.filter(question_id=self.q1.pk))

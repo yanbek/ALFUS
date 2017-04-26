@@ -1,17 +1,14 @@
 from collections import defaultdict
-
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-
 from .models import *
+
 
 class ViewTest(TestCase):
 
     def setUp(self):
         self.do_print = False
-
-
 
         # Make subject
         self.subject = Subject(name="Matte 1")

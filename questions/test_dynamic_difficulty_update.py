@@ -1,9 +1,9 @@
 from django.test import TestCase
 from django.utils import timezone
-
 from .cron import Difficulty_adjustment as DA
 from .models import *
 from django.contrib.auth.models import User
+
 
 class DynamicDifficultyTest(TestCase):
 
@@ -38,8 +38,6 @@ class DynamicDifficultyTest(TestCase):
 
         # Make users
         self.users = [User.objects.create_user("user" + str(i), "user" + str(i) + "@mail.com", "password") for i in range(0, 30)]
-
-
 
         # Make relationship between user and questions
         pass
